@@ -1,6 +1,10 @@
+mod control;
+
 use anyhow::Result;
 use std::io::{stdout, Write};
 use text_io::read;
+
+use control::commands;
 
 fn main() -> Result<()> {
     loop {
@@ -12,7 +16,6 @@ fn main() -> Result<()> {
             .split_whitespace()
             .map(|s| s.to_owned())
             .collect::<Vec<_>>();
-        println!("The command was: [{}].", user_input);
-        println!("The tags are: {:?}", tags);
+        commands::execute_from_capsule(commands::CommandCapsule::new(user_input, tags));
     }
 }
