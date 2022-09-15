@@ -1,7 +1,7 @@
 [package]
 name = "btagsil"
 description = "BTAGSIL = a Bullshit Text Adventure Game where Sky Is the Limit"
-author = "Einax"
+authors = ["Einax <oleksii.kshenskyi@outlook.com>"]
 version = "0.0.0"
 edition = "2021"
 
