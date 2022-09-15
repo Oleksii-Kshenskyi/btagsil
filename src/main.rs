@@ -16,6 +16,9 @@ fn main() -> Result<()> {
             .split_whitespace()
             .map(|s| s.to_owned())
             .collect::<Vec<_>>();
-        commands::execute_from_capsule(commands::CommandCapsule::new(user_input, tags));
+        commands::execute_from_capsule(
+            commands::CommandCapsule::new(user_input, tags),
+            &mut Box::new(&mut stdout()),
+        )?;
     }
 }
