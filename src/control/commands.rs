@@ -1,9 +1,10 @@
 use std::boxed::Box;
 use std::collections::HashMap;
+use std::error::Error;
 use std::io::Write;
 use std::process;
 
-use anyhow::{Ok, Result};
+use crate::data::errors;
 
 pub struct CommandCapsule {
     pub command_line: String,
@@ -16,13 +17,25 @@ impl CommandCapsule {
 }
 
 pub trait Command {
-    fn execute(&self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()>;
+    fn execute(
+        &self,
+        capsule: CommandCapsule,
+        writer: &mut dyn Write,
+    ) -> Result<(), Box<dyn Error>>;
+
+    fn footer(&self) -> String {
+        String::from("\n")
+    }
 }
 
 pub struct Echo;
 impl Command for Echo {
-    fn execute(&self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-        writeln!(
+    fn execute(
+        &self,
+        capsule: CommandCapsule,
+        writer: &mut dyn Write,
+    ) -> Result<(), Box<dyn Error>> {
+        write!(
             writer,
             "{}",
             capsule
@@ -36,8 +49,12 @@ impl Command for Echo {
 
 pub struct Exit;
 impl Command for Exit {
-    fn execute(&self, _capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-        writeln!(writer, "Come visit again!")?;
+    fn execute(
+        &self,
+        _capsule: CommandCapsule,
+        writer: &mut dyn Write,
+    ) -> Result<(), Box<dyn Error>> {
+        writeln!(writer, "Come visit again!\n")?;
         process::exit(0);
     }
 }
@@ -51,11 +68,18 @@ fn command_mapping() -> HashMap<String, Box<dyn Command>> {
     mapping
 }
 
-pub fn execute_from_capsule(capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-    let searchby = capsule.tags.get(0).unwrap().clone();
+pub fn execute_from_capsule(
+    capsule: CommandCapsule,
+    writer: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
+    let searchby = capsule.tags.get(0).ok_or(errors::CommandEmptyError {});
     let mut the_map = command_mapping();
-    let the_command = the_map.get_mut(&searchby).unwrap().as_mut();
+    let the_command = the_map
+        .get_mut(searchby?)
+        .ok_or(errors::CommandUnknownError)?
+        .as_mut();
 
     the_command.execute(capsule, writer)?;
+    writeln!(writer, "{}", the_command.footer())?;
     Ok(())
 }
