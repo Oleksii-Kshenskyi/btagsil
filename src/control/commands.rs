@@ -16,15 +16,15 @@ impl CommandCapsule {
 }
 
 pub trait Command {
-    fn execute(&mut self, capsule: CommandCapsule, writer: &mut Box<&mut dyn Write>) -> Result<()>;
+    fn execute(&mut self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()>;
 }
 
 pub struct Echo;
 impl Command for Echo {
-    fn execute(&mut self, capsule: CommandCapsule, writer: &mut Box<&mut dyn Write>) -> Result<()> {
-        writer.as_mut().write_all(
+    fn execute(&mut self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
+        writer.write_all(
             format!(
-                "{}",
+                "{}\n",
                 capsule
                     .command_line
                     .replacen(capsule.tags.get(0).unwrap(), "", 1)
@@ -39,12 +39,8 @@ impl Command for Echo {
 
 pub struct Exit;
 impl Command for Exit {
-    fn execute(
-        &mut self,
-        _capsule: CommandCapsule,
-        writer: &mut Box<&mut dyn Write>,
-    ) -> Result<()> {
-        writer.write_all(format!("{}", "Come visit again!\n").as_bytes())?;
+    fn execute(&mut self, _capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
+        writer.write_all("Come visit again!\n".as_bytes())?;
         writer.flush()?;
         process::exit(0);
     }
@@ -59,10 +55,7 @@ fn command_mapping() -> HashMap<String, Box<dyn Command>> {
     mapping
 }
 
-pub fn execute_from_capsule(
-    capsule: CommandCapsule,
-    writer: &mut Box<&mut dyn Write>,
-) -> Result<()> {
+pub fn execute_from_capsule(capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
     let searchby = capsule.tags.get(0).unwrap().clone();
     let mut the_map = command_mapping();
     let the_command = the_map.get_mut(&searchby).unwrap().as_mut();
