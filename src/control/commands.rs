@@ -22,17 +22,14 @@ pub trait Command {
 pub struct Echo;
 impl Command for Echo {
     fn execute(&mut self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-        writer.write_all(
-            format!(
-                "{}\n",
-                capsule
-                    .command_line
-                    .replacen(capsule.tags.get(0).unwrap(), "", 1)
-                    .trim()
-            )
-            .as_bytes(),
+        write!(
+            writer,
+            "{}\n",
+            capsule
+                .command_line
+                .replacen(capsule.tags.get(0).unwrap(), "", 1)
+                .trim()
         )?;
-        writer.flush()?;
         Ok(())
     }
 }
@@ -40,8 +37,7 @@ impl Command for Echo {
 pub struct Exit;
 impl Command for Exit {
     fn execute(&mut self, _capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-        writer.write_all("Come visit again!\n".as_bytes())?;
-        writer.flush()?;
+        write!(writer, "Come visit again!\n")?;
         process::exit(0);
     }
 }
