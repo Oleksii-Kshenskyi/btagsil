@@ -16,15 +16,15 @@ impl CommandCapsule {
 }
 
 pub trait Command {
-    fn execute(&mut self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()>;
+    fn execute(&self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()>;
 }
 
 pub struct Echo;
 impl Command for Echo {
-    fn execute(&mut self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-        write!(
+    fn execute(&self, capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
+        writeln!(
             writer,
-            "{}\n",
+            "{}",
             capsule
                 .command_line
                 .replacen(capsule.tags.get(0).unwrap(), "", 1)
@@ -36,8 +36,8 @@ impl Command for Echo {
 
 pub struct Exit;
 impl Command for Exit {
-    fn execute(&mut self, _capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
-        write!(writer, "Come visit again!\n")?;
+    fn execute(&self, _capsule: CommandCapsule, writer: &mut dyn Write) -> Result<()> {
+        writeln!(writer, "Come visit again!")?;
         process::exit(0);
     }
 }
