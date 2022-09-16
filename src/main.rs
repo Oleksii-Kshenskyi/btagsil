@@ -18,7 +18,7 @@ fn main() -> Result<()> {
             .collect::<Vec<_>>();
         commands::execute_from_capsule(
             commands::CommandCapsule::new(user_input, tags),
-            &mut Box::new(&mut stdout()),
+            &mut stdout(),
         )?;
     }
 }
