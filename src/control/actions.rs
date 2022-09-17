@@ -6,22 +6,19 @@ use std::process;
 
 use crate::data::errors;
 
-pub struct CommandCapsule {
+pub struct ActionCapsule {
     pub command_line: String,
     pub tags: Vec<String>,
 }
-impl CommandCapsule {
+impl ActionCapsule {
     pub fn new(command_line: String, tags: Vec<String>) -> Self {
         Self { command_line, tags }
     }
 }
 
-pub trait Command {
-    fn execute(
-        &self,
-        capsule: CommandCapsule,
-        writer: &mut dyn Write,
-    ) -> Result<(), Box<dyn Error>>;
+pub trait Action {
+    fn execute(&self, capsule: ActionCapsule, writer: &mut dyn Write)
+        -> Result<(), Box<dyn Error>>;
 
     fn footer(&self) -> String {
         String::from("\n")
@@ -29,10 +26,10 @@ pub trait Command {
 }
 
 pub struct Echo;
-impl Command for Echo {
+impl Action for Echo {
     fn execute(
         &self,
-        capsule: CommandCapsule,
+        capsule: ActionCapsule,
         writer: &mut dyn Write,
     ) -> Result<(), Box<dyn Error>> {
         write!(
@@ -48,10 +45,10 @@ impl Command for Echo {
 }
 
 pub struct Exit;
-impl Command for Exit {
+impl Action for Exit {
     fn execute(
         &self,
-        _capsule: CommandCapsule,
+        _capsule: ActionCapsule,
         writer: &mut dyn Write,
     ) -> Result<(), Box<dyn Error>> {
         writeln!(writer, "Come visit again!\n")?;
@@ -59,8 +56,8 @@ impl Command for Exit {
     }
 }
 
-fn command_mapping() -> HashMap<String, Box<dyn Command>> {
-    let mut mapping: HashMap<String, Box<dyn Command>> = HashMap::new();
+fn action_mapping() -> HashMap<String, Box<dyn Action>> {
+    let mut mapping: HashMap<String, Box<dyn Action>> = HashMap::new();
 
     mapping.insert(String::from("echo"), Box::new(Echo {}));
     mapping.insert(String::from("exit"), Box::new(Exit {}));
@@ -69,17 +66,17 @@ fn command_mapping() -> HashMap<String, Box<dyn Command>> {
 }
 
 pub fn execute_from_capsule(
-    capsule: CommandCapsule,
+    capsule: ActionCapsule,
     writer: &mut dyn Write,
 ) -> Result<(), Box<dyn Error>> {
-    let searchby = capsule.tags.get(0).ok_or(errors::CommandEmptyError {});
-    let mut the_map = command_mapping();
-    let the_command = the_map
+    let searchby = capsule.tags.get(0).ok_or(errors::ActionEmptyError {});
+    let mut the_map = action_mapping();
+    let the_action = the_map
         .get_mut(searchby?)
-        .ok_or(errors::CommandUnknownError)?
+        .ok_or(errors::ActionUnknownError)?
         .as_mut();
 
-    the_command.execute(capsule, writer)?;
-    writeln!(writer, "{}", the_command.footer())?;
+    the_action.execute(capsule, writer)?;
+    writeln!(writer, "{}", the_action.footer())?;
     Ok(())
 }
