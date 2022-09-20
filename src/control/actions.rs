@@ -4,6 +4,7 @@ use std::error::Error;
 use std::io::Write;
 use std::process;
 
+use crate::comprehension::lexer::Lexer;
 use crate::data::errors;
 
 pub struct ActionCapsule {
@@ -70,6 +71,10 @@ pub fn execute_from_capsule(
     writer: &mut dyn Write,
 ) -> Result<(), Box<dyn Error>> {
     let searchby = capsule.tags.get(0).ok_or(errors::ActionEmptyError {});
+    println!(
+        "OH MAI GAH: {:#?}",
+        Lexer::new(&capsule.tags.iter().map(String::as_str).collect::<Vec<_>>()).lex()?
+    );
     let mut the_map = action_mapping();
     let the_action = the_map
         .get_mut(searchby?)
