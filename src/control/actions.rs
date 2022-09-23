@@ -70,14 +70,14 @@ pub fn execute_from_capsule(
     capsule: ActionCapsule,
     writer: &mut dyn Write,
 ) -> Result<(), Box<dyn Error>> {
-    let searchby = capsule.tags.get(0).ok_or(errors::ActionEmptyError {});
-    println!(
-        "OH MAI GAH: {:#?}",
-        Lexer::new(&capsule.tags.iter().map(String::as_str).collect::<Vec<_>>()).lex()?
-    );
+    let searchby = capsule.tags.get(0).ok_or(errors::ActionEmptyError {})?;
+    // println!(
+    //     "OH MAI GAH: {:#?}",
+    //     Lexer::new(&capsule.tags.iter().map(String::as_str).collect::<Vec<_>>()).lex()?
+    // );
     let mut the_map = action_mapping();
     let the_action = the_map
-        .get_mut(searchby?)
+        .get_mut(searchby)
         .ok_or(errors::ActionUnknownError)?
         .as_mut();
 

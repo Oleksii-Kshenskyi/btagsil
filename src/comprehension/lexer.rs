@@ -31,7 +31,9 @@ impl<'a> Lexer<'a> {
         if self.helper.empty() {
             return Ok(lexed);
         }
+
         let (kind, length) = self.helper.direct_object_or_infix();
+
         let mut next = match kind {
             DOOrInfix::DirectObject => vec![Token::DirectObject(self.helper.consume(length))],
             DOOrInfix::Infix => Lexer::lex_infixes(&mut self.helper),
@@ -53,8 +55,10 @@ impl<'a> Lexer<'a> {
             while helper.head_at_infix() {
                 lexed.push(Token::Infix(helper.consume(1)));
             }
-            if let (DOOrInfix::DirectObject, param_size) = helper.direct_object_or_infix() {
-                lexed.push(Token::InfixObject(helper.consume(param_size)));
+            if !helper.empty() {
+                if let (DOOrInfix::DirectObject, param_size) = helper.direct_object_or_infix() {
+                    lexed.push(Token::InfixObject(helper.consume(param_size)));
+                }
             }
         }
 

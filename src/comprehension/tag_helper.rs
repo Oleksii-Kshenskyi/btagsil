@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum DOOrInfix {
     DirectObject,
     Infix,
@@ -5,7 +6,8 @@ pub enum DOOrInfix {
 
 pub fn infixes() -> Vec<&'static str> {
     vec![
-        "in", "at", "up", "out", "from", "into", "before", "after", "of", "about", "because",
+        "in", "at", "on", "for", "up", "out", "from", "into", "before", "after", "of", "about",
+        "because",
     ]
 }
 
@@ -16,28 +18,32 @@ pub struct TagHelper<'a> {
 
 impl<'a> TagHelper<'a> {
     pub fn new(tags: &'a [&'a str]) -> Self {
-        Self {
-            tags: tags,
-            head: 0,
-        }
+        Self { tags, head: 0 }
     }
 
     pub fn original_size(&self) -> usize {
         self.tags.len()
     }
     pub fn empty(&self) -> bool {
-        (&self.tags[self.head..self.tags.len()]).len() == 0
+        self.tags.len() <= self.head
     }
 
-    pub fn tag(&self, index: usize) -> &'a [&'a str] {
-        assert!(
-            self.tags.len() > index,
-            "OH NO: TagHelper::tag(): there are {} tags, but the index is {}.",
-            self.tags.len(),
-            index
-        );
-        &self.tags[index..(index + 1)]
-    }
+    // pub fn tag_at(&self, index: usize) -> &'a [&'a str] {
+    //     assert!(
+    //         self.tags.len() > index,
+    //         "OH NO: TagHelper::tag(): there are {} tags, but the index is {}.",
+    //         self.tags.len(),
+    //         index
+    //     );
+    //     &self.tags[index..(index + 1)]
+    // }
+    // pub fn head(&self) -> &'a [&'a str] {
+    //     assert!(
+    //         self.tags.len() > self.head,
+    //         "OH NO, TagHelper::head(): head is somewhere after the last element!"
+    //     );
+    //     &self.tags[self.head..(self.head + 1)]
+    // }
 
     pub fn consume(&mut self, how_many: usize) -> &'a [&'a str] {
         assert!(
@@ -53,12 +59,11 @@ impl<'a> TagHelper<'a> {
 
     pub fn direct_object_or_infix(&self) -> (DOOrInfix, usize) {
         let infixes = infixes();
-        let mut size: usize = 1;
+        let mut size: usize = 0;
         let mut counter = self.head;
-        let mut infix = false;
+        let infix = infixes.contains(&self.tags[counter]);
         while counter < self.tags.len() {
-            infix = infixes.contains(&self.tags[counter]);
-            if !infix {
+            if !infixes.contains(&self.tags[counter]) {
                 size += 1;
                 counter += 1;
             } else {
@@ -73,6 +78,10 @@ impl<'a> TagHelper<'a> {
     }
 
     pub fn head_at_infix(&self) -> bool {
-        infixes().contains(&self.tags[self.head])
+        if !self.empty() {
+            infixes().contains(&self.tags[self.head])
+        } else {
+            false
+        }
     }
 }
