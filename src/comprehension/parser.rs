@@ -1,7 +1,7 @@
+use std::collections::HashMap;
 use std::error::Error;
-use std::{borrow::Borrow, collections::HashMap};
 
-use super::lexer::{Lexer, Token};
+use super::lexer::Token;
 use crate::data::errors::{
     DoesNotAcceptInfixError, DoesNotTakeDirectObjectError, RootActionUnknownError,
 };
@@ -48,9 +48,6 @@ impl Validator {
 
     pub fn accepts_direct_object(&self) -> bool {
         self.direct_object
-    }
-    pub fn accepts_infixes(&self) -> bool {
-        self.acceptable_infixes.len() != 0
     }
     pub fn accepts_infix<S: AsRef<str>>(&self, infix: S) -> bool {
         self.acceptable_infixes.contains(&infix.as_ref())
