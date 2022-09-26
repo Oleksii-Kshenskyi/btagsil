@@ -65,7 +65,7 @@ pub fn execute_from_capsule(
     //     Lexer::new(&capsule.tags.iter().map(String::as_str).collect::<Vec<_>>()).lex()?
     // );
     let owned_tags = &capsule.tags.iter().map(String::as_str).collect::<Vec<_>>();
-    let mut lexer = Lexer::new(&owned_tags);
+    let mut lexer = Lexer::new(owned_tags);
     let lexed = lexer.lex()?;
 
     let parsed_config = Parser::new().parse(lexed)?;

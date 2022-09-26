@@ -40,7 +40,7 @@ impl Validator {
         infixes: &'static [&'static str],
     ) -> Self {
         Self {
-            root_action: action.as_ref(),
+            root_action: action,
             direct_object,
             acceptable_infixes: infixes,
         }
@@ -70,12 +70,12 @@ impl Parser {
 
     pub fn parse(&self, lexed: Vec<Token>) -> Result<ActionConfig, Box<dyn Error>> {
         assert!(
-            lexed.len() > 0,
+            !lexed.is_empty(),
             "OH NO, Parser::parse(): the lexed vec is empty!"
         );
         let root: String;
         if let Token::RootAction(obj) = lexed.get(0).unwrap() {
-            root = obj.join(" ").to_owned();
+            root = obj.join(" ");
         } else {
             panic!("Parser::parse(): the first lexed element is not a root action! This should be impossible.");
         }
@@ -83,7 +83,7 @@ impl Parser {
         let validator = self
             .validators
             .get(&*root)
-            .ok_or(RootActionUnknownError::new(root))?
+            .ok_or_else(|| RootActionUnknownError::new(root))?
             .clone();
 
         let mut the_config = ActionConfig::empty();
@@ -97,7 +97,7 @@ impl Parser {
         validator: Validator,
         mut config: ActionConfig,
     ) -> Result<ActionConfig, Box<dyn Error>> {
-        if lexed.len() == 0 {
+        if lexed.is_empty() {
             return Ok(config);
         }
 
@@ -120,8 +120,8 @@ impl Parser {
             },
             Token::InfixObject(v) => {
                 let last_infix = config.infixes.last_mut().expect("Parser::actually_parse(): need to parse an infix object but it's the first infix element somehow?..");
-                let owned_vec: Vec<String> = v.iter().map(|x| x.to_string()).collect::<Vec<_>>();
-                last_infix.param.append(&mut owned_vec.clone());
+                let mut owned_vec: Vec<String> = v.iter().map(|x| x.to_string()).collect::<Vec<_>>();
+                last_infix.param.append(&mut owned_vec);
             },
         }
 

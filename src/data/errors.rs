@@ -33,7 +33,7 @@ impl fmt::Display for RootActionUnknownError {
         )
     }
 }
-impl<'a> RootActionUnknownError {
+impl RootActionUnknownError {
     pub fn new(root: String) -> Self {
         Self { root }
     }
@@ -54,7 +54,7 @@ impl fmt::Display for DoesNotTakeDirectObjectError {
         )
     }
 }
-impl<'a> DoesNotTakeDirectObjectError {
+impl DoesNotTakeDirectObjectError {
     pub fn new(root: String, direct_object: String) -> Self {
         Self {
             root,
@@ -78,7 +78,7 @@ impl fmt::Display for DoesNotAcceptInfixError {
         )
     }
 }
-impl<'a> DoesNotAcceptInfixError {
+impl DoesNotAcceptInfixError {
     pub fn new(root: String, infix: String) -> Self {
         Self { root, infix }
     }
