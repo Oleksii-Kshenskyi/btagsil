@@ -1,3 +1,4 @@
+mod comprehension;
 mod control;
 mod data;
 
@@ -7,7 +8,7 @@ use std::process;
 use std::result::Result;
 use text_io::read;
 
-use control::commands;
+use control::actions;
 use data::errors;
 
 fn try_main() -> Result<(), Box<dyn Error>> {
@@ -22,11 +23,8 @@ fn try_main() -> Result<(), Box<dyn Error>> {
             .map(|s| s.to_owned())
             .collect::<Vec<_>>();
 
-        match commands::execute_from_capsule(
-            commands::CommandCapsule::new(user_input, tags),
-            writer,
-        ) {
-            Err(ref e) if e.is::<errors::CommandEmptyError>() => (),
+        match actions::execute_from_capsule(actions::ActionCapsule::new(user_input, tags), writer) {
+            Err(ref e) if e.is::<errors::ActionEmptyError>() => (),
             Err(e) => writeln!(writer, "{}\n", e)?,
             Ok(()) => (),
         }
