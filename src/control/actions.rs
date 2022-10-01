@@ -1,6 +1,5 @@
 use std::boxed::Box;
 use std::collections::HashMap;
-use std::error::Error;
 use std::io::Write;
 use std::process;
 
