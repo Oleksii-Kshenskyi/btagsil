@@ -28,23 +28,6 @@ impl<'a> TagHelper<'a> {
         self.tags.len() <= self.head
     }
 
-    // pub fn tag_at(&self, index: usize) -> &'a [&'a str] {
-    //     assert!(
-    //         self.tags.len() > index,
-    //         "OH NO: TagHelper::tag(): there are {} tags, but the index is {}.",
-    //         self.tags.len(),
-    //         index
-    //     );
-    //     &self.tags[index..(index + 1)]
-    // }
-    // pub fn head(&self) -> &'a [&'a str] {
-    //     assert!(
-    //         self.tags.len() > self.head,
-    //         "OH NO, TagHelper::head(): head is somewhere after the last element!"
-    //     );
-    //     &self.tags[self.head..(self.head + 1)]
-    // }
-
     pub fn consume(&mut self, how_many: usize) -> &'a [&'a str] {
         assert!(
             self.tags.len() >= how_many,

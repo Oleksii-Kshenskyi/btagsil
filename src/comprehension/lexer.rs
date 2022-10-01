@@ -64,9 +64,4 @@ impl<'a> Lexer<'a> {
 
         lexed
     }
-    //     fn actually_lex(tags: &mut Vec<String>, tokens: &mut Vec<Token>) -> Vec<Token> {
-    //         let mut lexed: Vec<Token> = vec![];
-
-    //         lexed
-    //     }
 }

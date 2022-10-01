@@ -49,8 +49,8 @@ impl Action for Exit {
 fn action_mapping() -> HashMap<String, Box<dyn Action>> {
     let mut mapping: HashMap<String, Box<dyn Action>> = HashMap::new();
 
-    mapping.insert(String::from("echo"), Box::new(Echo {}));
-    mapping.insert(String::from("exit"), Box::new(Exit {}));
+    mapping.insert("echo".to_owned(), Box::new(Echo {}));
+    mapping.insert("exit".to_owned(), Box::new(Exit {}));
 
     mapping
 }
@@ -60,10 +60,7 @@ pub fn execute_from_capsule(
     writer: &mut dyn Write,
 ) -> Result<(), Box<dyn Error>> {
     capsule.tags.get(0).ok_or(errors::ActionEmptyError {})?;
-    // println!(
-    //     "OH MAI GAH: {:#?}",
-    //     Lexer::new(&capsule.tags.iter().map(String::as_str).collect::<Vec<_>>()).lex()?
-    // );
+
     let owned_tags = &capsule.tags.iter().map(String::as_str).collect::<Vec<_>>();
     let mut lexer = Lexer::new(owned_tags);
     let lexed = lexer.lex()?;
