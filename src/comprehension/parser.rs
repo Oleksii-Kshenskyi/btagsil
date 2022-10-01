@@ -80,7 +80,7 @@ impl Parser {
         let validator = self
             .validators
             .get(&*root)
-            .ok_or_else(|| ErrorType::Parsing(ParsingError::RootActionUnknown(root)))?
+            .ok_or(ErrorType::Parsing(ParsingError::RootActionUnknown(root)))?
             .clone();
 
         let mut the_config = ActionConfig::empty();
