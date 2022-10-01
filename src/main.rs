@@ -9,7 +9,7 @@ use std::result::Result;
 use text_io::read;
 
 use control::actions;
-use data::errors;
+use data::errors::{CliError, ErrorType};
 
 fn try_main() -> Result<(), Box<dyn Error>> {
     loop {
@@ -24,7 +24,7 @@ fn try_main() -> Result<(), Box<dyn Error>> {
             .collect::<Vec<_>>();
 
         match actions::execute_from_capsule(actions::ActionCapsule::new(user_input, tags), writer) {
-            Err(ref e) if e.is::<errors::ActionEmptyError>() => (),
+            Err(ErrorType::CLIUsage(CliError::ActionEmpty)) => (),
             Err(e) => writeln!(writer, "{}\n", e)?,
             Ok(()) => (),
         }

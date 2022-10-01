@@ -1,10 +1,7 @@
 use std::collections::HashMap;
-use std::error::Error;
 
 use super::lexer::Token;
-use crate::data::errors::{
-    DoesNotAcceptInfixError, DoesNotTakeDirectObjectError, RootActionUnknownError,
-};
+use crate::data::errors::{ErrorType, ParsingError};
 
 pub struct Infix {
     pub infix: String,
@@ -68,7 +65,7 @@ impl Parser {
         }
     }
 
-    pub fn parse(&self, lexed: Vec<Token>) -> Result<ActionConfig, Box<dyn Error>> {
+    pub fn parse(&self, lexed: Vec<Token>) -> Result<ActionConfig, ErrorType> {
         assert!(
             !lexed.is_empty(),
             "OH NO, Parser::parse(): the lexed vec is empty!"
@@ -83,7 +80,7 @@ impl Parser {
         let validator = self
             .validators
             .get(&*root)
-            .ok_or_else(|| RootActionUnknownError::new(root))?
+            .ok_or(ErrorType::Parsing(ParsingError::RootActionUnknown(root)))?
             .clone();
 
         let mut the_config = ActionConfig::empty();
@@ -96,7 +93,7 @@ impl Parser {
         lexed: &[Token],
         validator: Validator,
         mut config: ActionConfig,
-    ) -> Result<ActionConfig, Box<dyn Error>> {
+    ) -> Result<ActionConfig, ErrorType> {
         if lexed.is_empty() {
             return Ok(config);
         }
@@ -107,7 +104,7 @@ impl Parser {
                 if validator.accepts_direct_object() {
                 config.direct_object = v.iter().map(|x| x.to_string()).collect::<Vec<_>>()
                 } else {
-                    return Err(Box::new(DoesNotTakeDirectObjectError::new(validator.root_action.to_owned(), v.join(" "))));
+                    return Err(ErrorType::Parsing(ParsingError::DoesNotTakeDirectObject(validator.root_action.to_owned(), v.join(" ")))); 
                 }
             },
             Token::Infix(v) => {
@@ -115,7 +112,7 @@ impl Parser {
                 if validator.accepts_infix(&infix_str) {
                     config.infixes.push(Infix { infix: infix_str, param: vec![] });
                 } else {
-                    return Err(Box::new(DoesNotAcceptInfixError::new(validator.root_action.to_owned(), infix_str)));
+                    return Err(ErrorType::Parsing(ParsingError::DoesNotAcceptInfix(validator.root_action.to_owned(), infix_str)));
                 }
             },
             Token::InfixObject(v) => {
