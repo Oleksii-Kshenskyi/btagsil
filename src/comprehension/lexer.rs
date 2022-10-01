@@ -1,5 +1,5 @@
 use crate::comprehension::tag_helper::{DOOrInfix, TagHelper};
-use std::error::Error;
+use crate::data::errors::ErrorType;
 
 #[derive(Debug)]
 pub enum Token<'a> {
@@ -20,7 +20,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    pub fn lex(&mut self) -> Result<Vec<Token>, Box<dyn Error>> {
+    pub fn lex(&mut self) -> Result<Vec<Token>, ErrorType> {
         assert!(
             self.helper.original_size() > 0,
             "Lexer::lex(): number of tags received by Lexer is 0!"

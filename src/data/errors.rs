@@ -2,21 +2,23 @@ use std::error::Error;
 use std::fmt;
 
 #[derive(Debug)]
-enum ErrorType {
+pub enum ErrorType {
     CLIUsage(CliError),
     Parsing(ParsingError),
+    System(String),
 }
 impl fmt::Display for ErrorType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::CLIUsage(x) => write!(f, "{}", x),
             Self::Parsing(x) => write!(f, "{}", x),
+            Self::System(x) => write!(f, "{}", x),
         }
     }
 }
 
 #[derive(Debug)]
-enum CliError {
+pub enum CliError {
     ActionUnknown,
     ActionEmpty,
 }
@@ -31,7 +33,7 @@ impl fmt::Display for CliError {
 }
 
 #[derive(Debug)]
-enum ParsingError {
+pub enum ParsingError {
     RootActionUnknown(String),
     DoesNotTakeDirectObject(String, String),
     DoesNotAcceptInfix(String, String),
@@ -50,6 +52,11 @@ impl fmt::Display for ParsingError {
             }
         };
         write!(f, "{}", message)
+    }
+}
+impl From<std::io::Error> for ErrorType {
+    fn from(e: std::io::Error) -> Self {
+        ErrorType::System(e.to_string())
     }
 }
 

@@ -6,7 +6,7 @@ use std::process;
 
 use crate::comprehension::lexer::Lexer;
 use crate::comprehension::parser::{ActionConfig, Parser};
-use crate::data::errors;
+use crate::data::errors::{CliError, ErrorType};
 
 pub struct ActionCapsule {
     pub command_line: String,
@@ -19,7 +19,7 @@ impl ActionCapsule {
 }
 
 pub trait Action {
-    fn execute(&self, capsule: ActionConfig, writer: &mut dyn Write) -> Result<(), Box<dyn Error>>;
+    fn execute(&self, capsule: ActionConfig, writer: &mut dyn Write) -> Result<(), ErrorType>;
 
     fn footer(&self) -> String {
         String::from("\n")
@@ -28,7 +28,7 @@ pub trait Action {
 
 pub struct Echo;
 impl Action for Echo {
-    fn execute(&self, config: ActionConfig, writer: &mut dyn Write) -> Result<(), Box<dyn Error>> {
+    fn execute(&self, config: ActionConfig, writer: &mut dyn Write) -> Result<(), ErrorType> {
         write!(writer, "{}", config.direct_object.join(" "))?;
         Ok(())
     }
@@ -36,11 +36,7 @@ impl Action for Echo {
 
 pub struct Exit;
 impl Action for Exit {
-    fn execute(
-        &self,
-        _capsule: ActionConfig,
-        writer: &mut dyn Write,
-    ) -> Result<(), Box<dyn Error>> {
+    fn execute(&self, _capsule: ActionConfig, writer: &mut dyn Write) -> Result<(), ErrorType> {
         writeln!(writer, "Come visit again!\n")?;
         process::exit(0);
     }
@@ -58,8 +54,11 @@ fn action_mapping() -> HashMap<String, Box<dyn Action>> {
 pub fn execute_from_capsule(
     capsule: ActionCapsule,
     writer: &mut dyn Write,
-) -> Result<(), Box<dyn Error>> {
-    capsule.tags.get(0).ok_or(errors::ActionEmptyError {})?;
+) -> Result<(), ErrorType> {
+    capsule
+        .tags
+        .get(0)
+        .ok_or(ErrorType::CLIUsage(CliError::ActionEmpty))?;
 
     let owned_tags = &capsule.tags.iter().map(String::as_str).collect::<Vec<_>>();
     let mut lexer = Lexer::new(owned_tags);
@@ -70,7 +69,7 @@ pub fn execute_from_capsule(
     let mut the_map = action_mapping();
     let the_action = the_map
         .get_mut(&parsed_config.root_action)
-        .ok_or(errors::ActionUnknownError)?
+        .ok_or(ErrorType::CLIUsage(CliError::ActionUnknown))?
         .as_mut();
 
     the_action.execute(parsed_config, writer)?;
