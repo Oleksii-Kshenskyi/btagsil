@@ -61,6 +61,9 @@ impl Parser {
             validators: HashMap::from([
                 ("exit", Validator::new("exit", false, &[])),
                 ("echo", Validator::new("echo", true, &[])),
+                ("where", Validator::new("where", true, &[])),
+                ("who", Validator::new("who", true, &[])),
+                ("name", Validator::new("name", true, &[])),
             ]),
         }
     }
@@ -83,6 +86,10 @@ impl Parser {
             .ok_or(ErrorType::Parsing(ParsingError::RootActionUnknown(root)))?
             .clone();
 
+        if validator.accepts_direct_object() && lexed.len() < 2 {
+            return Err(ErrorType::Parsing(ParsingError::DirectObjectNotProvided(validator.root_action.to_owned())));
+        }
+
         let mut the_config = ActionConfig::empty();
         the_config.root_action = root_for_config;
         self.actually_parse(&lexed[1..], validator, the_config)
@@ -101,8 +108,11 @@ impl Parser {
         match lexed[0] {
             Token::RootAction(_v) => panic!("Parser::actually_parse(): encountered the second RootAction token, which should be impossible!"),
             Token::DirectObject(v) => {
-                if validator.accepts_direct_object() {
-                config.direct_object = v.iter().map(|x| x.to_string()).collect::<Vec<_>>()
+                if validator.accepts_direct_object() && v.is_empty() {
+                    return Err(ErrorType::Parsing(ParsingError::DirectObjectNotProvided(validator.root_action.to_owned())))
+                } 
+                else if validator.accepts_direct_object() {
+                    config.direct_object = v.iter().map(|x| x.to_string()).collect::<Vec<_>>()
                 } else {
                     return Err(ErrorType::Parsing(ParsingError::DoesNotTakeDirectObject(validator.root_action.to_owned(), v.join(" ")))); 
                 }
