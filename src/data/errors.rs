@@ -35,7 +35,9 @@ impl fmt::Display for CliError {
 pub enum ParsingError {
     RootActionUnknown(String),
     DoesNotTakeDirectObject(String, String),
+    DirectObjectNotProvided(String),
     DoesNotAcceptInfix(String, String),
+    DirectObjectIsInvalid(String, String, Option<String>),
 }
 impl fmt::Display for ParsingError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -46,8 +48,23 @@ impl fmt::Display for ParsingError {
             Self::DoesNotTakeDirectObject(r, dobj) => {
                 format!("Hmmm... How would you '{}' a '{}'?", r, dobj)
             }
+            Self::DirectObjectNotProvided(r) => {
+                format!(
+                    "You need to specify something to '{}'. Try '{} <something>'.",
+                    r, r
+                )
+            }
             Self::DoesNotAcceptInfix(r, inf) => {
                 format!("Hmmm... How would you '{}' '{}' something?", r, inf)
+            }
+            Self::DirectObjectIsInvalid(r, dobj, None) => {
+                format!("Hmm... No, you can't {} a {} :(", r, dobj)
+            }
+            Self::DirectObjectIsInvalid(r, dobj, Some(suggestion)) => {
+                format!(
+                    "You can't {} a {}! Maybe you meant '{}'?",
+                    r, dobj, suggestion
+                )
             }
         };
         write!(f, "{}", message)

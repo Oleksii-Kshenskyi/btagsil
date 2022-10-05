@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::data::errors::ErrorType;
+
 pub struct Entity {
     pub name: String,
 }
@@ -24,6 +26,18 @@ impl Player {
             None => "nameless".to_owned(),
             Some(e) => e.name.clone(),
         }
+    }
+    pub fn new_name(&mut self, new_name: String) -> Result<(), ErrorType> {
+        match self.entity {
+            Some(_) => Err(ErrorType::System("You already have a name.".to_owned())),
+            None => {
+                self.entity = Some(Entity { name: new_name });
+                Ok(())
+            }
+        }
+    }
+    pub fn location(&self) -> String {
+        self.current_location.clone()
     }
 }
 
