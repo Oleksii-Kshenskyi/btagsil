@@ -50,9 +50,6 @@ impl Location {
             place: Place { name, description },
         }
     }
-    pub fn name(&self) -> String {
-        self.place.name.clone()
-    }
     pub fn description(&self) -> String {
         self.place.description.join("\n")
     }

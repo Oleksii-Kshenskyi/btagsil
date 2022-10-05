@@ -77,13 +77,13 @@ impl Action for Where {
                     .expect("Where Action, execute(): player's current location is corrupted.")
                     .description()
             )?;
-            return Ok(());
+            Ok(())
         } else {
-            return Err(ErrorType::Parsing(ParsingError::DirectObjectIsInvalid(
+            Err(ErrorType::Parsing(ParsingError::DirectObjectIsInvalid(
                 "where".to_owned(),
                 config.direct_object.join(" "),
                 Some("where am i".to_owned()),
-            )));
+            )))
         }
     }
 }
@@ -99,13 +99,13 @@ impl Action for Who {
         let do_str = config.direct_object.join(" ");
         if do_str == "am i" {
             write!(writer, "You are {}.", world.player.name())?;
-            return Ok(());
+            Ok(())
         } else {
-            return Err(ErrorType::Parsing(ParsingError::DirectObjectIsInvalid(
+            Err(ErrorType::Parsing(ParsingError::DirectObjectIsInvalid(
                 "who".to_owned(),
                 config.direct_object.join(" "),
                 Some("who am i".to_owned()),
-            )));
+            )))
         }
     }
 }
@@ -120,29 +120,27 @@ impl Action for Name {
     ) -> Result<(), ErrorType> {
         let do_vec = config.direct_object;
         if do_vec.get(0).unwrap() != "myself" {
-            return Err(ErrorType::Parsing(ParsingError::DirectObjectIsInvalid(
+            Err(ErrorType::Parsing(ParsingError::DirectObjectIsInvalid(
                 "name".to_owned(),
                 do_vec.join(" "),
                 Some("name myself <some name>".to_owned()),
-            )));
+            )))
+        } else if do_vec.len() < 2 {
+            Err(ErrorType::System(
+                "What name do you want for yourself?".to_owned(),
+            ))
         } else {
-            if do_vec.len() < 2 {
-                return Err(ErrorType::System(
-                    "What name do you want for yourself?".to_owned(),
-                ));
+            let name = world.player.name();
+            if name != "nameless" {
+                Err(ErrorType::System(format!(
+                    "You already have a name. You are {}.",
+                    name
+                )))
             } else {
-                let name = world.player.name();
-                if name != "nameless" {
-                    return Err(ErrorType::System(format!(
-                        "You already have a name. You are {}.",
-                        name
-                    )));
-                } else {
-                    let new_name = &do_vec[1..].join(" ");
-                    write!(writer, "From now on, you are {}.", &new_name)?;
-                    world.player.new_name(new_name.to_string())?;
-                    return Ok(());
-                }
+                let new_name = &do_vec[1..].join(" ");
+                write!(writer, "From now on, you are {}.", &new_name)?;
+                world.player.new_name(new_name.to_string())?;
+                Ok(())
             }
         }
     }
