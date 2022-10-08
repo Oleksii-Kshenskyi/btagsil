@@ -1,14 +1,13 @@
 name:                btagsil
-version:             0.1.0.0
-github:              "githubuser/btagsil"
-license:             BSD3
-author:              "Author name here"
+version:             0.0.0.0
+github:              "Oleksii-Kshenskyi/btagsil"
+license:             "TheUnlicense"
+author:              "Oleksii <Einax> Kshenskyi"
 maintainer:          "example@example.com"
-copyright:           "2022 Author name here"
+copyright:           "public domain"
 
 extra-source-files:
 - README.md
-- CHANGELOG.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,10 +16,10 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/btagsil#readme>
+description:         Please see the README on GitHub at <https://github.com/Oleksii-Kshenskyi/btagsil/>
 
 dependencies:
-- base >= 4.7 && < 5
+- base >= 4.17 && < 5
 - text >= 1.2.5.0
 
 ghc-options:
