@@ -24,7 +24,9 @@ source-repository head
 
 library
   exposed-modules:
+      Actions
       Lib
+      Parse
   other-modules:
       Paths_btagsil
   hs-source-dirs:
