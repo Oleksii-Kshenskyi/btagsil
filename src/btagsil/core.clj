@@ -1,10 +1,15 @@
 (ns btagsil.core)
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn repl-once []
+  (let [prompt ">> "]
+    (print prompt)
+    (flush)
+    (read-line)))
 
-(defn -main [& args]
-  (foo "KEKW")
-  (println args))
+(defn repl-run []
+  (loop [input (repl-once)]
+    (println (str input "\n"))
+    (recur (repl-once))))
+
+(defn -main [& _args]
+  (repl-run))
