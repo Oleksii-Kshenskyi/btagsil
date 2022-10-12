@@ -1,4 +1,5 @@
-(ns btagsil.core)
+(ns btagsil.core
+  (:require [btagsil.actions :refer [repl-execute]]))
 
 (defn repl-once []
   (let [prompt ">> "]
@@ -8,7 +9,7 @@
 
 (defn repl-run []
   (loop [input (repl-once)]
-    (println (str input "\n"))
+    (repl-execute input)
     (recur (repl-once))))
 
 (defn -main [& _args]
