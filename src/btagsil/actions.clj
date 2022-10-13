@@ -6,7 +6,7 @@
   (match (first tags)
     "exit"  [:exit]
     "echo"  [:respond (join " " (rest tags))]
-    ""      [:empty]
+    nil     [:empty]
     :else   [:unknown (join " " tags)]))
 
 (defn repl-exit []
@@ -18,7 +18,7 @@
   (println (str "Umm... What is '" what "'?\n")))
 (defn repl-empty [])
 (defn repl-execute [input]
-  (match (get-action (split input #"\s"))
+  (match (get-action (filter not-empty (split input #"\s")))
     [:exit] (repl-exit)
     [:respond what] (repl-respond what)
     [:empty] (repl-empty)

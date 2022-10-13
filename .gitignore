@@ -3,3 +3,4 @@ Cargo.lock
 .vs/
 .clj-kondo/
 .lsp
+.lein-repl-history
