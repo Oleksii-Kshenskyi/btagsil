@@ -9,17 +9,20 @@
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
 
-(defn repl-exit []
+(defn repl-exit [world]
   (println "Thanks for playing! Come again!\n")
-  (System/exit 0))
-(defn repl-respond [what]
-  (println (str what "\n")))
-(defn repl-unknown [what]
-  (println (str "Umm... What is '" what "'?\n")))
-(defn repl-empty [])
-(defn repl-execute [input]
+  (System/exit 0)
+  world)
+(defn repl-respond [what world]
+  (println (str what "\n"))
+  world)
+(defn repl-unknown [what world]
+  (println (str "Umm... What is '" what "'?\n"))
+  world)
+(defn repl-empty [world] world)
+(defn repl-execute [input world]
   (match (get-action (filter not-empty (split input #"\s")))
-    [:exit] (repl-exit)
-    [:respond what] (repl-respond what)
-    [:empty] (repl-empty)
-    [:unknown what] (repl-unknown what)))
+    [:exit] (repl-exit world)
+    [:respond what] (repl-respond what world)
+    [:empty] (repl-empty world)
+    [:unknown what] (repl-unknown what world)))

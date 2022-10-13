@@ -1,5 +1,6 @@
 (ns btagsil.core
-  (:require [btagsil.actions :refer [repl-execute]]))
+  (:require [btagsil.actions :refer [repl-execute]]
+            [btagsil.world :refer [init-world]]))
 
 (defn repl-once []
   (let [prompt ">> "]
@@ -8,9 +9,9 @@
     (read-line)))
 
 (defn repl-run []
-  (loop [input (repl-once)]
-    (repl-execute input)
-    (recur (repl-once))))
+  (loop [world init-world
+         input (repl-once)]
+    (recur (repl-execute input world) (repl-once))))
 
 (defn -main [& _args]
   (repl-run))
