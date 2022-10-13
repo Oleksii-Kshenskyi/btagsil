@@ -10,8 +10,9 @@
 
 (defn repl-run []
   (loop [world init-world
+         _wia (repl-execute "where am i" world)
          input (repl-once)]
-    (recur (repl-execute input world) (repl-once))))
+    (recur (repl-execute input world) _wia (repl-once))))
 
 (defn -main [& _args]
   (repl-run))
