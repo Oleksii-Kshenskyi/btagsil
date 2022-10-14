@@ -53,7 +53,7 @@
   world)
 (defn repl-empty [world] world)
 (defn repl-execute [world input]
-  (match (get-action (filter not-empty (split input #"\s")) world)
+  (match (get-action world (filter not-empty (split input #"\s")))
     [:exit] (repl-exit world)
     [:respond what] (repl-respond world what)
     [:change [changed-world response]] (repl-respond changed-world response)
