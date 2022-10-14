@@ -14,7 +14,7 @@
   (get-in world [:player :current-location]))
 (defn location-keyword [world loc]
   (let [keyword (keyword loc)]
-    (if (contains? (vec (keys (:locations world))) keyword)
+    (if (.contains (vec (keys (:locations world))) keyword)
       keyword
       nil)))
 (defn short-name-by-key [world key]
