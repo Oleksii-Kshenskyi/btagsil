@@ -1,6 +1,7 @@
 (ns btagsil.world
   (:require [clojure.string :refer [join]]
-            [btagsil.data :as data]))
+            [btagsil.data :as data]
+            [clojure.core.match :refer [match]]))
 
 (defn apply-nce [n f]
   (apply comp (repeat n f)))
@@ -38,7 +39,18 @@
         names (connected-short-names world connected)]
   (data/you-can-go-to names)))
 
+(defn current-weapon-description [world]
+  (get-in world [:player :weapon :description]))
+
+(defn look-at [world what]
+  (let [descr (current-weapon-description world)
+        what-str (join " " what)]
+    (match what
+      []         (data/look-at-what-error)
+      ["weapon"] (data/look-at-weapon descr)
+      :else      (data/look-at-error what-str))))
+
 (def init-world
-  {:player {:current-location :forest}
-   :locations (decompress {(data/init-forest)
+  {:player (data/init-player)
+   :locations (decompress {(data/init-forest) ; TODO: new location: weapon shop
                            (data/init-square)})})

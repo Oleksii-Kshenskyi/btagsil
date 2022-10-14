@@ -1,23 +1,27 @@
 (ns btagsil.actions
   (:require [clojure.core.match :refer [match]]
             [clojure.string :refer [join split]]
-            [btagsil.world :as w]))
+            [btagsil.world :as world]
+            [btagsil.data :as data]))
 
-(defn where-loc-error [args] (str "Sorry, I can only tell you where you are, not '"
-                                  (join " " args)
-                                  "'!\nTry using 'where am i'."))
 (defn act-where [tags world]
-  (match (into [] tags)
-    ["where" "am" "i"] (w/current-loc-description world)
-    ["where"] (str "Where what?")
-    ["where" "can" "i" "go"] (w/possible-destinations world)
-    ["where" "is" thing] (str "I don't know where '" thing "' is ¯\\_(ツ)_/¯")
-    [_where & args] (where-loc-error args)))
+  (match (vec tags)
+    ["where" "am" "i"] (world/current-loc-description world)
+    ["where"] (data/where-error)
+    ["where" "can" "i" "go"] (world/possible-destinations world)
+    ["where" "is" & thing] (data/where-is-error (join " " thing))
+    [_where & args] (data/where-loc-error (join " " args))))
+
+(defn act-look [tags world]
+  (match (vec tags)
+    ["look" "at" & what] (world/look-at world what)
+    :else (data/look-error (rest tags))))
 
 (defn get-action [tags world]
   (match (first tags)
     "exit"  [:exit]
     "where" [:respond (act-where tags world)]
+    "look"  [:respond (act-look tags world)]
     "echo"  [:respond (join " " (rest tags))]
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
