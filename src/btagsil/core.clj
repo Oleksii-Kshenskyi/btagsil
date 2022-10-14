@@ -15,5 +15,4 @@
          input (repl-once)]
     (recur (repl-execute world input) _wia (repl-once))))
 
-(defn -main [& _args]
-  (repl-run))
+(defn -main [& _args] (repl-run))
