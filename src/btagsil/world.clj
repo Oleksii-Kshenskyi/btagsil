@@ -12,11 +12,21 @@
   (get-in world [:locations loc]))
 (defn current-loc-id [world]
   (get-in world [:player :current-location]))
+(defn location-keyword [world loc]
+  (let [keyword (keyword loc)]
+    (if (contains? (vec (keys (:locations world))) keyword)
+      keyword
+      nil)))
+(defn short-name-by-key [world key]
+  (->> (get-location world key)
+       (:short-name)))
 
 (defn get-current-loc [world]
   (let [loc-id (current-loc-id world)
         curr-loc (get-location world loc-id)]
     curr-loc))
+(defn set-current-loc [world loc]
+  (assoc-in world [:player :current-location] loc))
 
 (defn current-loc-description [world]
   (let [curr-loc (get-current-loc world)
@@ -24,9 +34,19 @@
         descr (:description curr-loc)]
   (data/describe-loc name descr)))
 
-(defn short-name-by-key [world key]
-  (->> (get-location world key)
-       (:short-name)))
+(defn go-response-by-keyword [world loc-keyword]
+  (data/you-went-to (short-name-by-key world loc-keyword)))
+(defn set-loc [world where]
+  (let [where-str (join " " where)
+        loc-keyword (location-keyword world where-str)]
+    (when loc-keyword
+      (set-current-loc world loc-keyword))))
+(defn went-to [world where]
+  (let [where-str (join " " where)
+        loc-keyword (location-keyword world where-str)]
+    (if loc-keyword
+      (go-response-by-keyword world loc-keyword)
+      (data/no-such-loc-error where-str))))
 
 (defn connected-short-names [world connected]
   (->> connected

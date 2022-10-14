@@ -53,12 +53,24 @@
 (defn you-can-go-to [short-name-chain]
   (str "You can go to " short-name-chain " from here."))
 
+(defn you-went-to [where]
+  (str "You went to " where "."))
+
 ;;; Weapon helpers
 
 (defn look-at-weapon [description]
   (str "You see " description "."))
 
 ;;; Error helpers
+
+(defn go-error [_tags]
+  (str "I can only go 'to' places."))
+
+(defn go-to-where-error []
+  (str "Go to... where?"))
+
+(defn no-such-loc-error [where-str]
+  (str "Whoops, " where-str " is not a place you can go to!"))
 
 (defn look-error [_what]
   (str "I can only look 'at' stuff."))
