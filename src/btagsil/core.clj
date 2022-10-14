@@ -1,12 +1,13 @@
 (ns btagsil.core
-  (:require [btagsil.actions :refer [repl-execute]]
+  (:require [clojure.string :refer [lower-case]]
+            [btagsil.actions :refer [repl-execute]]
             [btagsil.world :refer [init-world]]))
 
 (defn repl-once []
   (let [prompt ">> "]
     (print prompt)
     (flush)
-    (read-line)))
+    (lower-case (read-line))))
 
 (defn repl-run []
   (loop [world init-world
