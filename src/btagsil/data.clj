@@ -90,3 +90,6 @@
 
 (defn where-is-error [thing]
   (str "I don't know where '" thing "' is ¯\\_(ツ)_/¯"))
+
+(defn where-is-what-error []
+  (str "Where is what?"))

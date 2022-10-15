@@ -11,6 +11,7 @@
     ["where" "am" "i"] (world/current-loc-description world)
     ["where"] (data/where-error)
     ["where" "can" "i" "go"] (world/possible-destinations world)
+    ["where" "is"] (data/where-is-what-error)
     ["where" "is" & thing] (data/where-is-error (join " " thing))
     [_where & args] (data/where-loc-error (join " " args))))
 
