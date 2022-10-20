@@ -35,6 +35,7 @@
 
 (defn change-go [world tags]
   (match (vec tags)
+    ["go" "to"] world
     ["go" "to" & where] (world/set-loc world where)
     :else world))
 
