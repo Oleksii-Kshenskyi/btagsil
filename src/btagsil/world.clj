@@ -96,6 +96,20 @@
       ["weapon"] (data/look-at-weapon descr)
       :else      (data/look-at-error what-str))))
 
+(defn what-is-here [world]
+  (let [objects (:objects (get-current-loc world))
+        object-bodies (map #(nth % 1) objects)
+        descrs (map :name object-bodies)]
+    (match (vec descrs)
+      [] (data/you-see-nothing)
+      x (data/you-see (join ", " x)))))
+
+(defn what-is [world what]
+  (let [object (join " " what)]
+    (match (vec what)
+      ["here"] (what-is-here world)
+      :else (data/dont-know-what-is object))))
+
 (defn show [world]
   (data/show-world world))
 

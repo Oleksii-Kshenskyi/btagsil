@@ -21,14 +21,33 @@
   {:current-location :forest
    :weapon (init-fists)})
 
+;;; Location objects
+
+(defn init-object [name description properties]
+  {:name name
+   :description description
+   :properties properties})
+
+(defn init-guard []
+  (init-object "a guard"
+               (str "a big muscular man in heavy armor wielding a halberd\n"
+                    "He looks friendly and loves talking to strangers visiting the square.")
+                    [:talkable]))
+
+(defn init-weapon-shop-shopkeeper []
+  (init-object "a shopkeeper"
+               (str "a shopkeeper running the weapon shop.\n"
+                    "He's throwing glances at you hoping you'll buy a weapon from him.")
+               [:talkable, :shopkeeper]))
+
 ;;; Location data
 
 (defn init-location [name short-name description connected objects]
   {:name name
-       :short-name short-name
-       :description description
-       :connected connected
-       :objects objects})
+   :short-name short-name
+   :description description
+   :connected connected
+   :objects objects})
 
 (defn init-forest []
   (init-location "a beautiful rainforest"
@@ -44,7 +63,7 @@
                  "a square"
                  "so grand you're starting to feel a little nauseous."
                  [:forest, :weapon-shop]
-                 []))
+                 {:guard (init-guard)}))
 
 ;; TODO: There should be a shopkeeper in the shop. He can sell you weapons.
 (defn init-weapon-shop []
@@ -53,7 +72,7 @@
                  (str "chock-full with all sorts of weapons to buy.\n"
                       "The shopkeeper is watching you closely, both curious and wary.")
                  [:square]
-                 []))
+                 {:shopkeeper (init-weapon-shop-shopkeeper)}))
 
 ;; TODO: There should be a cave. You can fight a monster inside.
 
@@ -69,6 +88,11 @@
 
 (defn you-went-to [where]
   (str "You went to " where "."))
+
+;; Location object helpers
+
+(defn you-see [what]
+  (str "You see " what " here."))
 
 ;;; Weapon helpers
 
@@ -117,3 +141,15 @@
 
 (defn where-is-what-error []
   (str "Where is what?"))
+
+(defn what-error []
+  (str "Sorry, I can only answer questions like 'what is <something>'."))
+
+(defn what-is-what-error []
+  (str "What is... what?"))
+
+(defn you-see-nothing []
+  (str "You don't see anything important here."))
+
+(defn dont-know-what-is [object]
+  (str "Sorry, I don't know what '" object "' is."))
