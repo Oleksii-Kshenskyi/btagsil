@@ -1,15 +1,7 @@
 (ns btagsil.world
-  (:require [clojure.string :refer [join]]
+  (:require [clojure.string :refer [join replace]]
             [btagsil.data :as data]
             [clojure.core.match :refer [match]]))
-
-;; Helper functions
-
-(defn apply-nce [n f]
-  (apply comp (repeat n f)))
-
-(defn decompress [m]
-  (apply hash-map ((apply-nce 3 #(apply concat %)) m)))
 
 ;; Working with locations
 
@@ -20,7 +12,7 @@
   (get-in world [:player :current-location]))
 
 (defn location-keyword [world loc]
-  (let [keyword (keyword loc)]
+  (let [keyword (keyword (replace loc #" " "-"))]
     (if (.contains (vec (keys (:locations world))) keyword)
       keyword
       nil)))
@@ -111,5 +103,6 @@
 
 (def init-world
   {:player (data/init-player)
-   :locations (decompress {(data/init-forest) ; TODO: new location: weapon shop
-                           (data/init-square)})})
+   :locations {:forest (data/init-forest) ; TODO: new location: cave
+               :square (data/init-square)
+               :weapon-shop (data/init-weapon-shop)}})

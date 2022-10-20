@@ -23,25 +23,39 @@
 
 ;;; Location data
 
-(defn init-location [id name short-name description connected]
-  {id {:name name
+(defn init-location [name short-name description connected objects]
+  {:name name
        :short-name short-name
        :description description
-       :connected connected}})
+       :connected connected
+       :objects objects})
 
 (defn init-forest []
-  (init-location :forest
-                 "a beautiful rainforest"
+  (init-location "a beautiful rainforest"
                  "a rainforest"
                  (str "overflowing with gorgeous trees and grass.\n" 
                       "The fresh smell of nature after rain is in the air.")
-                 [:square]))
+                 [:square]
+                 []))
+
+;; TODO: There should be a guard on the square. He says random stuff when you talk to him.
 (defn init-square []
-  (init-location :square
-                 "a busy square full of people"
+  (init-location "a busy square full of people"
                  "a square"
                  "so grand you're starting to feel a little nauseous."
-                 [:forest]))
+                 [:forest, :weapon-shop]
+                 []))
+
+;; TODO: There should be a shopkeeper in the shop. He can sell you weapons.
+(defn init-weapon-shop []
+  (init-location "a weapon shop"
+                 "a weapon shop"
+                 (str "chock-full with all sorts of weapons to buy.\n"
+                      "The shopkeeper is watching you closely, both curious and wary.")
+                 [:square]
+                 []))
+
+;; TODO: There should be a cave. You can fight a monster inside.
 
 ;;; Text helpers
 
