@@ -30,14 +30,14 @@
 
 (defn init-guard []
   (init-object "a guard"
-               (str "a big muscular man in heavy armor wielding a halberd\n"
-                    "He looks friendly and loves talking to strangers visiting the square.")
+               (str "a big muscular man in heavy armor wielding a halberd.\n"
+                    "He looks friendly and loves talking to strangers visiting the square")
                     [:talkable]))
 
 (defn init-weapon-shop-shopkeeper []
   (init-object "a shopkeeper"
                (str "a shopkeeper running the weapon shop.\n"
-                    "He's throwing glances at you hoping you'll buy a weapon from him.")
+                    "He's throwing glances at you hoping you'll buy a weapon from him")
                [:talkable, :shopkeeper]))
 
 ;;; Location data
@@ -94,6 +94,9 @@
 (defn you-see [what]
   (str "You see " what " here."))
 
+(defn look-at-object [descr]
+  (str "You see " descr "."))
+
 ;;; Weapon helpers
 
 (defn look-at-weapon [description]
@@ -121,9 +124,12 @@
   (str "I can only look 'at' stuff."))
 
 (defn look-at-error [what]
-  (str "I don't know how to look at "
+  (str "You don't see any "
        what
-       ".\nMaybe you meant 'look at weapon'?"))
+       "s around.\n"
+       "You can say 'look at my weapon' to look at your weapon.\n"
+       "You can also look at things that are around here.\n"
+       "Say 'what is here' to see what you can look at."))
 
 (defn look-at-what-error [] (str "Look at what?"))
 

@@ -1,7 +1,12 @@
 (ns btagsil.world
-  (:require [clojure.string :refer [join replace]]
+  (:require [clojure.string :as str]
             [btagsil.data :as data]
             [clojure.core.match :refer [match]]))
+
+;; Helpers
+
+(defn str->keyword [orig-str]
+  (keyword (str/replace orig-str #" " "-")))
 
 ;; Working with locations
 
@@ -12,7 +17,7 @@
   (get-in world [:player :current-location]))
 
 (defn location-keyword [world loc]
-  (let [keyword (keyword (replace loc #" " "-"))]
+  (let [keyword (str->keyword loc)]
     (if (.contains (vec (keys (:locations world))) keyword)
       keyword
       nil)))
@@ -39,6 +44,11 @@
         descr (:description curr-loc)]
   (data/describe-loc name descr)))
 
+;; Working with objects
+
+(defn get-object-by-keyword [loc keyword]
+  (get-in loc [:objects keyword]))
+
 ;; The go action (first implemented action that changes the world)
 
 (defn go-response-by-keyword [world loc-keyword]
@@ -55,7 +65,7 @@
       :else :valid)))
 
 (defn set-loc [world where from]
-  (let [where-str (join " " where)
+  (let [where-str (str/join " " where)
         loc-keyword (location-keyword world where-str)
         validated (validate-route world loc-keyword from)]
     (match validated
@@ -63,7 +73,7 @@
       :else world)))
 
 (defn went-to [world where from]
-  (let [where-str (join " " where)
+  (let [where-str (str/join " " where)
         loc-keyword (location-keyword world where-str)
         validated (validate-route world loc-keyword from)]
     (match validated
@@ -77,7 +87,7 @@
 (defn connected-short-names [world connected]
   (->> connected
        (map #(short-name-by-key world %))
-       (join ", ")))
+       (str/join ", ")))
 
 (defn possible-destinations [world]
   (let [curr-loc (get-current-loc world)
@@ -88,13 +98,21 @@
 (defn current-weapon-description [world]
   (get-in world [:player :weapon :description]))
 
+(defn look-at-object [world what]
+  (let [object-keyword (str->keyword what)
+        current-loc (get-current-loc world)
+        object (get-object-by-keyword current-loc object-keyword)]
+    (match object
+      nil (data/look-at-error what)
+      o (data/look-at-object (:description o)))))
+
 (defn look-at [world what]
   (let [descr (current-weapon-description world)
-        what-str (join " " what)]
+        what-str (str/join " " what)]
     (match what
       []         (data/look-at-what-error)
-      ["weapon"] (data/look-at-weapon descr)
-      :else      (data/look-at-error what-str))))
+      ["my" "weapon"] (data/look-at-weapon descr)
+      :else      (look-at-object world what-str))))
 
 (defn what-is-here [world]
   (let [objects (:objects (get-current-loc world))
@@ -102,10 +120,10 @@
         descrs (map :name object-bodies)]
     (match (vec descrs)
       [] (data/you-see-nothing)
-      x (data/you-see (join ", " x)))))
+      x (data/you-see (str/join ", " x)))))
 
 (defn what-is [world what]
-  (let [object (join " " what)]
+  (let [object (str/join " " what)]
     (match (vec what)
       ["here"] (what-is-here world)
       :else (data/dont-know-what-is object))))
