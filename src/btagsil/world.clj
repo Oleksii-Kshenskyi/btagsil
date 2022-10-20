@@ -5,6 +5,9 @@
 
 ;; Helpers
 
+(defn keyword->str [orig-key]
+  (str/replace (str/replace (str orig-key) #":" "") #"-" " "))
+
 (defn str->keyword [orig-str]
   (keyword (str/replace orig-str #" " "-")))
 
@@ -80,7 +83,7 @@
       :valid (go-response-by-keyword world loc-keyword)
       :already-there (data/already-there-error where-str)
       :no-such-loc (data/no-such-loc-error where-str)
-      :invalid-route (data/cant-get-there-from-here-error from where-str))))
+      :invalid-route (data/cant-get-there-from-here-error (keyword->str from) where-str))))
 
 ;; Navigational actions
 

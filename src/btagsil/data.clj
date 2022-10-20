@@ -32,13 +32,13 @@
   (init-object "a guard"
                (str "a big muscular man in heavy armor wielding a halberd.\n"
                     "He looks friendly and loves talking to strangers visiting the square")
-                    [:talkable]))
+                    [:talks]))
 
 (defn init-weapon-shop-shopkeeper []
   (init-object "a shopkeeper"
                (str "a shopkeeper running the weapon shop.\n"
                     "He's throwing glances at you hoping you'll buy a weapon from him")
-               [:talkable, :shopkeeper]))
+               [:talks, :sells]))
 
 ;;; Location data
 
