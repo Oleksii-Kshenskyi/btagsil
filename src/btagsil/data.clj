@@ -82,6 +82,9 @@
 
 (defn look-at-what-error [] (str "Look at what?"))
 
+(defn show-error [] (str "NOPE: I can only show 'world' for now."))
+(defn show-world [world] (str "Current world is: " world))
+
 (defn where-error [] (str "Where what?"))
 
 (defn where-loc-error [what] (str "Sorry, I can only tell you where you are, not '"

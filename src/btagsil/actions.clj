@@ -20,6 +20,11 @@
     ["look" "at" & what] (world/look-at world what)
     :else (data/look-error (rest tags))))
 
+(defn act-show [world tags]
+  (match (vec tags)
+    ["show" "world"] (world/show world)
+    :else (data/show-error)))
+
 ;; Change actions:
 
 (defn respond-go [changed-world tags]
@@ -45,7 +50,8 @@
     "exit"  [:exit]
     "where" [:respond (act-where world tags)]
     "look"  [:respond (act-look world tags)]
-    "echo"  [:respond (join " " (rest tags))] 
+    "echo"  [:respond (join " " (rest tags))]
+    "show"  [:debug (act-show world tags)]
     "go"    [:change (perform-go world tags)]
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
@@ -61,6 +67,10 @@
   (println (str what "\n"))
   world)
 
+(defn repl-debug [world what]
+  (println (str "[DEBUG INFO] " what "\n"))
+  world)
+
 (defn repl-unknown [world what]
   (println (str "Umm... What is '" what "'?\n"))
   world)
@@ -73,6 +83,7 @@
   (match (get-action world (filter not-empty (split input #"\s")))
     [:exit] (repl-exit world)
     [:respond what] (repl-respond world what)
+    [:debug what] (repl-debug world what)
     [:change [changed-world response]] (repl-respond changed-world response)
     [:empty] (repl-empty world)
     [:unknown what] (repl-unknown world what)))

@@ -85,6 +85,9 @@
       ["weapon"] (data/look-at-weapon descr)
       :else      (data/look-at-error what-str))))
 
+(defn show [world]
+  (data/show-world world))
+
 ;; The world initialization func
 
 (def init-world
