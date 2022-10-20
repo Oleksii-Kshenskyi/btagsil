@@ -27,21 +27,22 @@
 
 ;; Change actions:
 
-(defn respond-go [changed-world tags]
+(defn respond-go [changed-world tags from]
   (match (vec tags)
     ["go" "to"] (data/go-to-where-error)
-    ["go" "to" & where] (world/went-to changed-world where)
+    ["go" "to" & where] (world/went-to changed-world where from)
     :else (data/go-error (rest tags))))
 
-(defn change-go [world tags]
+(defn change-go [world tags from]
   (match (vec tags)
     ["go" "to"] world
-    ["go" "to" & where] (world/set-loc world where)
+    ["go" "to" & where] (world/set-loc world where from)
     :else world))
 
 (defn perform-go [world tags]
-  (let [changed-world (change-go world tags)
-        response (respond-go changed-world tags)]
+  (let [from (world/current-loc-id world)
+        changed-world (change-go world tags from)
+        response (respond-go changed-world tags from)]
     [changed-world response]))
 
 ;; Here we decide which action to perform based on the first word of the user input.

@@ -25,6 +25,7 @@
       keyword
       nil)))
 
+
 (defn short-name-by-key [world key]
   (->> (get-location world key)
        (:short-name)))
@@ -33,6 +34,9 @@
   (let [loc-id (current-loc-id world)
         curr-loc (get-location world loc-id)]
     curr-loc))
+
+(defn can-go [world from to]
+  (.contains (:connected (get-location world from)) to))
 
 (defn set-current-loc [world loc]
   (assoc-in world [:player :current-location] loc))
@@ -48,18 +52,33 @@
 (defn go-response-by-keyword [world loc-keyword]
   (data/you-went-to (short-name-by-key world loc-keyword)))
 
-(defn set-loc [world where]
-  (let [where-str (join " " where)
-        loc-keyword (location-keyword world where-str)]
-    (when loc-keyword
-      (set-current-loc world loc-keyword))))
+(defn validate-route [world to-keyword from]
+  (let [already-there (= from to-keyword)
+        no-such-loc (= to-keyword nil)
+        valid-route (can-go world from to-keyword)]
+    (match [already-there, no-such-loc, valid-route]
+      [_, true, _] :no-such-loc
+      [true, _, _] :already-there
+      [_, _, false] :invalid-route
+      :else :valid)))
 
-(defn went-to [world where]
+(defn set-loc [world where from]
   (let [where-str (join " " where)
-        loc-keyword (location-keyword world where-str)]
-    (if loc-keyword
-      (go-response-by-keyword world loc-keyword)
-      (data/no-such-loc-error where-str))))
+        loc-keyword (location-keyword world where-str)
+        validated (validate-route world loc-keyword from)]
+    (match validated
+      :valid (set-current-loc world loc-keyword)
+      :else world)))
+
+(defn went-to [world where from]
+  (let [where-str (join " " where)
+        loc-keyword (location-keyword world where-str)
+        validated (validate-route world loc-keyword from)]
+    (match validated
+      :valid (go-response-by-keyword world loc-keyword)
+      :already-there (data/already-there-error where-str)
+      :no-such-loc (data/no-such-loc-error where-str)
+      :invalid-route (data/cant-get-there-from-here-error from where-str))))
 
 ;; Navigational actions
 

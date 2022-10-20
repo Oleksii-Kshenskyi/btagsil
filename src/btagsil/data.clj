@@ -72,6 +72,13 @@
 (defn no-such-loc-error [where-str]
   (str "Whoops, " where-str " is not a place you can go to!"))
 
+(defn already-there-error [where-str]
+  (str "You cannot go to '" where-str, "', you're already there!"))
+
+(defn cant-get-there-from-here-error [current-loc where-str]
+  (str "You cannot go to '" where-str "' from '" current-loc "'.\n"
+       "'where can i go' can help you learn where you can go from '" current-loc "'!"))
+
 (defn look-error [_what]
   (str "I can only look 'at' stuff."))
 

@@ -4,3 +4,4 @@ Cargo.lock
 .clj-kondo/
 .lsp
 .lein-repl-history
+.calva/
