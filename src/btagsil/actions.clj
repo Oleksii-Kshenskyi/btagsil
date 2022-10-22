@@ -29,7 +29,8 @@
   (match (vec tags)
     ["what"] (data/what-error)
     ["what" "is"] (data/what-is-what-error)
-    ["what" "is" & what] (world/what-is world what)))
+    ["what" "is" & what] (world/what-is world what)
+    ["what" & _nope] (data/what-error)))
 
 ;; Change actions:
 
