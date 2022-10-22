@@ -28,6 +28,7 @@
 
 (defn act-what [world tags]
   (match (vec tags)
+    ["what" "can" "i" "buy"] (world/what-can-player-buy world)
     ["what"] (data/what-error)
     ["what" "is"] (data/what-is-what-error)
     ["what" "is" & what] (world/what-is world what)

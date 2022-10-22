@@ -70,6 +70,19 @@
       (.contains (:properties object) prop-id)
       false)))
 
+(defn get-seller-object [world]
+  (let [current-loc-objects (:objects (get-current-loc world))
+        seller-objects (filter #(object-has-prop? world (key %) :sells) current-loc-objects)]
+    (if (empty? seller-objects)
+      nil
+      (nth (nth seller-objects 0) 1))))
+
+(defn what-are-you-selling [seller-object]
+  (let [sells-vec (get-in seller-object [:behavior :sells])]
+    (if (empty? sells-vec)
+      (throw (Exception. "what-are-you-selling: UNREACHABLE: a seller object doesn't sell anything?"))
+      (data/i-sell-these (str/join ", " (map keyword->str sells-vec))))))
+
 ;; The talk action
 
 (defn talk-to-guard [_world guard-name]
@@ -171,6 +184,12 @@
     (match (vec what)
       ["here"] (what-is-here world)
       :else (data/dont-know-what-is object))))
+
+(defn what-can-player-buy [world]
+  (let [seller-object (get-seller-object world)]
+    (if seller-object
+      (what-are-you-selling seller-object)
+      (data/we-dont-sell-anything-here-error))))
 
 (defn show [world]
   (data/show-world world))

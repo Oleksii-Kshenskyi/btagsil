@@ -23,16 +23,18 @@
 
 ;;; Location objects
 
-(defn init-object [name description properties]
+(defn init-object [name description properties behavior]
   {:name name
    :description description
-   :properties properties})
+   :properties properties
+   :behavior behavior})
 
 (defn init-guard []
   (init-object "a guard"
                (str "a big muscular man in heavy armor wielding a halberd.\n"
                     "He looks friendly and loves talking to strangers visiting the square")
-                    [:talks]))
+               [:talks]
+               {}))
 
 (defn guard-pandoras-box []
   [
@@ -55,7 +57,8 @@
   (init-object "a shopkeeper"
                (str "a shopkeeper running the weapon shop.\n"
                     "He's throwing glances at you hoping you'll buy a weapon from him")
-               [:talks, :sells]))
+               [:talks, :sells]
+               {:sells [:an-axe, :a-sword, :a-bow]}))
 
 ;;; Location data
 
@@ -114,6 +117,9 @@
   (str shopkeeper-name " says: '"
        "Stop talking and buy something already, you flirtatious vagabond!"
        "'"))
+
+(defn i-sell-these [things]
+  (str "You can buy " things " here."))
 
 (defn you-see [what]
   (str "You see " what " here."))
@@ -184,6 +190,9 @@
 
 (defn what-error []
   (str "Sorry, I can only answer questions like 'what is <something>'."))
+
+(defn we-dont-sell-anything-here-error []
+  (str "No one around here seems to be interested in selling you stuff."))
 
 (defn what-is-what-error []
   (str "What is... what?"))
