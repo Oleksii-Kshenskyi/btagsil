@@ -11,6 +11,11 @@
 (defn str->keyword [orig-str]
   (keyword (str/replace orig-str #" " "-")))
 
+(defn take-from-pandoras-box [box]
+  (let [random-index (rand-int (count box))
+        random-item (nth box random-index)]
+    random-item))
+
 ;; Working with locations
 
 (defn get-location [world loc]
@@ -51,6 +56,41 @@
 
 (defn get-object-by-keyword [loc keyword]
   (get-in loc [:objects keyword]))
+
+(defn object-valid-in-current-loc? [world object-id]
+  (let [current-loc (get-current-loc world)
+        object (get-object-by-keyword current-loc object-id)]
+    (boolean object)))
+
+(defn object-has-prop? [world object-id prop-id]
+  (let [valid? (object-valid-in-current-loc? world object-id)
+        current-loc (get-current-loc world)
+        object (get-object-by-keyword current-loc object-id)]
+    (if valid?
+      (.contains object prop-id)
+      false)))
+
+;; The talk action
+
+(defn talk-to-guard [_world guard-name]
+  (let [guard-says (take-from-pandoras-box data/guard-pandoras-box)]
+    (data/guard-says guard-says guard-name)))
+
+(defn talk-to-object-by-id [world object-keyword]
+  (match object-keyword
+    :guard (talk-to-guard world (keyword->str object-keyword))
+    :shopkeeper (data/talk-to-shopkeeper world (keyword->str object-keyword))
+    :else (throw (Exception. (str "world/talk-to-object-by-id: Don't know how to talk to " object-keyword ".")))))
+
+(defn talk-to-object [world object-name-str]
+  (let [object-keyword (str->keyword (str/join " " object-name-str))
+        object-exists? (object-valid-in-current-loc? world object-keyword)
+        object-talks? (object-has-prop? world object-keyword :talks)]
+    (match [object-exists? object-talks?]
+      [true true] (talk-to-object-by-id world object-keyword)
+      [false false] (data/no-object-to-talk-to-error object-name-str)
+      [false true] (data/does-not-talk-error object-name-str)
+      [_ _] (throw (Exception. "world/talk-to-object: UNREACHABLE: The object talks but does not exist!!!")))))
 
 ;; The go action (first implemented action that changes the world)
 

@@ -34,6 +34,21 @@
 
 ;; Change actions:
 
+(defn respond-talk [world tags]
+  (match (vec tags)
+    ["talk" "to"] (data/talk-to-what-error)
+    ["talk"] (data/talk-error)
+    ["talk" "to" & object-name-str] (world/talk-to-object world (join " " object-name-str))
+    ["talk" & _nope] (data/talk-error)))
+
+(defn change-talk [world _tags] world)
+
+(defn perform-talk [world tags]
+  (let [changed-world (change-talk world tags)
+        response (respond-talk world tags)]
+    [changed-world response]))
+
+
 (defn respond-go [changed-world tags from]
   (match (vec tags)
     ["go" "to"] (data/go-to-where-error)
@@ -63,6 +78,7 @@
     "echo"  [:respond (join " " (rest tags))]
     "show"  [:debug (act-show world tags)]
     "go"    [:change (perform-go world tags)]
+    "talk"  [:change (perform-talk world tags)]
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
 

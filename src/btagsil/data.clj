@@ -34,6 +34,23 @@
                     "He looks friendly and loves talking to strangers visiting the square")
                     [:talks]))
 
+(defn guard-pandoras-box []
+  [
+   "How's your day going today, Your Highness?"
+   "Did you know that dragons can fly?"
+   "I've been thinking about the purpose of my life a lot recently... Why am I here?"
+   "I want to kiss a girl so much..."
+   "I'm a bit under the weather today, apologies."
+   "You look lovely today, Your Highness!"
+   "WOW! The hat REALLY suits you! So stylish!"
+   "It's important to remember to brush your teeth every morning."
+   "A bottle of fine ale would hit the spot right about now..."
+   "It's impressive how quickly these tourists litter the square. Ugh."
+   "Did you know there's a fine weapon shop just nearby? Try going there!"
+   "Are you tired?"
+   "I remember that time I was a wee little lad..."
+  ])
+
 (defn init-weapon-shop-shopkeeper []
   (init-object "a shopkeeper"
                (str "a shopkeeper running the weapon shop.\n"
@@ -91,6 +108,14 @@
 
 ;; Location object helpers
 
+(defn guard-says [guard-says guard-name]
+  (str guard-name " says: '" guard-says "'"))
+
+(defn talk-to-shopkeeper [_world shopkeeper-name]
+  (str shopkeeper-name " says: '"
+       "Stop talking and buy something already, you flirtatious vagabond!"
+       "'"))
+
 (defn you-see [what]
   (str "You see " what " here."))
 
@@ -103,6 +128,16 @@
   (str "You see " description "."))
 
 ;;; Error helpers
+
+(defn no-object-to-talk-to-error [object-name-str]
+  (str "You don't seem to see any " object-name-str "s that would be willing to talk."))
+
+(defn does-not-talk-error [object-name-str]
+  (str "The " object-name-str " doesn't seem to react."))
+
+(defn talk-error [] (str "I can only talk 'to' stuff."))
+
+(defn talk-to-what-error [] (str "Talk to... what?"))
 
 (defn go-error [_tags]
   (str "I can only go 'to' places."))
