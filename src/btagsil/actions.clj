@@ -38,7 +38,7 @@
   (match (vec tags)
     ["talk" "to"] (data/talk-to-what-error)
     ["talk"] (data/talk-error)
-    ["talk" "to" & object-name-str] (world/talk-to-object world (join " " object-name-str))
+    ["talk" "to" & object-name-vec] (world/talk-to-object world object-name-vec)
     ["talk" & _nope] (data/talk-error)))
 
 (defn change-talk [world _tags] world)

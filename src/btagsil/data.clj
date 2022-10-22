@@ -68,7 +68,7 @@
 
 (defn init-forest []
   (init-location "a beautiful rainforest"
-                 "a rainforest"
+                 "a forest"
                  (str "overflowing with gorgeous trees and grass.\n" 
                       "The fresh smell of nature after rain is in the air.")
                  [:square]

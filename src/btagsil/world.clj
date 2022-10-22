@@ -67,29 +67,30 @@
         current-loc (get-current-loc world)
         object (get-object-by-keyword current-loc object-id)]
     (if valid?
-      (.contains object prop-id)
+      (.contains (:properties object) prop-id)
       false)))
 
 ;; The talk action
 
 (defn talk-to-guard [_world guard-name]
-  (let [guard-says (take-from-pandoras-box data/guard-pandoras-box)]
-    (data/guard-says guard-says guard-name)))
+  (let [guard-says (take-from-pandoras-box (data/guard-pandoras-box))]
+    (data/guard-says guard-says (str/capitalize guard-name))))
 
 (defn talk-to-object-by-id [world object-keyword]
   (match object-keyword
     :guard (talk-to-guard world (keyword->str object-keyword))
-    :shopkeeper (data/talk-to-shopkeeper world (keyword->str object-keyword))
+    :shopkeeper (data/talk-to-shopkeeper world (str/capitalize (keyword->str object-keyword)))
     :else (throw (Exception. (str "world/talk-to-object-by-id: Don't know how to talk to " object-keyword ".")))))
 
-(defn talk-to-object [world object-name-str]
-  (let [object-keyword (str->keyword (str/join " " object-name-str))
+(defn talk-to-object [world object-name-vec]
+  (let [object-name-str (str/join " " object-name-vec)
+        object-keyword (str->keyword object-name-str)
         object-exists? (object-valid-in-current-loc? world object-keyword)
         object-talks? (object-has-prop? world object-keyword :talks)]
     (match [object-exists? object-talks?]
       [true true] (talk-to-object-by-id world object-keyword)
       [false false] (data/no-object-to-talk-to-error object-name-str)
-      [false true] (data/does-not-talk-error object-name-str)
+      [true false] (data/does-not-talk-error object-name-str)
       [_ _] (throw (Exception. "world/talk-to-object: UNREACHABLE: The object talks but does not exist!!!")))))
 
 ;; The go action (first implemented action that changes the world)
