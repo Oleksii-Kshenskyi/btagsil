@@ -18,6 +18,7 @@
 (defn act-look [world tags]
   (match (vec tags)
     ["look" "at" & what] (world/look-at world what)
+    ["look" "around"] (world/what-is-here world)
     :else (data/look-error (rest tags))))
 
 (defn act-show [world tags]

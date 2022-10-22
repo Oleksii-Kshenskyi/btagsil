@@ -74,7 +74,6 @@
                  [:square]
                  []))
 
-;; TODO: There should be a guard on the square. He says random stuff when you talk to him.
 (defn init-square []
   (init-location "a busy square full of people"
                  "a square"
@@ -156,7 +155,7 @@
        "'where can i go' can help you learn where you can go from '" current-loc "'!"))
 
 (defn look-error [_what]
-  (str "I can only look 'at' stuff."))
+  (str "I can either 'look at' stuff or 'look around'."))
 
 (defn look-at-error [what]
   (str "You don't see any "
