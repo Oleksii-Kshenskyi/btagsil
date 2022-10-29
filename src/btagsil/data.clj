@@ -150,7 +150,7 @@
        "No clue what you're going to do with it though..."))
 
 (defn player-ded [monster-damage monster-name monster-swing]
-  (str "The " monster-name monster-swing ". You take " monster-damage " damage.\n"
+  (str "The " monster-name " " monster-swing ". You take " monster-damage " damage.\n"
        "The blow ends up being fatal. You bleed out and die from your wounds..."))
 
 (defn bought-thing [thing-str seller-name]

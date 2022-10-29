@@ -94,20 +94,28 @@
     "go"    [:change (perform-go world tags)]
     "talk"  [:change (perform-talk world tags)]
     "buy"   [:change (perform-buy world tags)]
-    "attack" [:change (perform-attack world tags)]
+    "attack" [:change-or-exit (perform-attack world tags)]
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
 
 ;; Types of REPL's reactions to user input:
 
-(defn repl-exit [world]
-  (println "Thanks for playing! Come again!\n")
+(defn repl-exit-with-message [world what]
+  (println (str what "\n"))
   (System/exit 0)
   world)
+
+(defn repl-exit [world]
+  (repl-exit-with-message world "Thanks for playing! Come again!\n"))
 
 (defn repl-respond [world what]
   (println (str what "\n"))
   world)
+
+(defn repl-change-or-exit [change what]
+  (match change
+    :exit (repl-exit-with-message change what)
+    world (repl-respond world what)))
 
 (defn repl-debug [world what]
   (println (str "[DEBUG INFO] " what "\n"))
@@ -127,5 +135,6 @@
     [:respond what] (repl-respond world what)
     [:debug what] (repl-debug world what)
     [:change [changed-world response]] (repl-respond changed-world response)
+    [:change-or-exit [change response]] (repl-change-or-exit change response)
     [:empty] (repl-empty world)
     [:unknown what] (repl-unknown world what)))

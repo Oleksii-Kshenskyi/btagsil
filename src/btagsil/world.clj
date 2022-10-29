@@ -100,7 +100,7 @@
         player-dies? (<= player-new-hp 0)
         monster-dies? (<= monster-new-hp 0)]
     (match [player-dies? monster-dies?]
-      [true _] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/player-ded monster-damage (keyword->str target-id) monster-swing)]
+      [true _] [:exit (data/player-ded monster-damage (keyword->str target-id) monster-swing)]
       [false false] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/attack-trade-blows monster-damage (keyword->str target-id) monster-swing player-damage player-swing)]
       [false true] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/monster-ded monster-damage (keyword->str target-id) monster-swing player-damage player-swing)])))
 
