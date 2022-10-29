@@ -2,24 +2,35 @@
 
 ;;; Weapons data
 
-(defn init-weapon [name description]
+(defn init-weapon [name description damage swing-message]
   {:name name
-   :description description})
+   :description description
+   :damage damage
+   :swing swing-message})
 
 (defn init-fists [] (init-weapon "bare fists"
-                                 "just your bare fists"))
+                                 "just your bare fists"
+                                 5
+                                 "swing your fists using a technique you saw in a movie in your past life"))
 (defn init-axe [] (init-weapon "an axe"
-                               "an enormous razor-sharp greataxe with blades on both ends of the hilt"))
+                               "an enormous razor-sharp greataxe with blades on both ends of the hilt"
+                               50
+                               "swing the giant greataxe"))
 (defn init-sword [] (init-weapon "a sword"
-                                 "a long beautiful claymore with an ornamental pattern on the blade"))
+                                 "a long beautiful claymore with an ornamental pattern on the blade"
+                                 40
+                                 "masterfully cleave with the claymore"))
 (defn init-bow [] (init-weapon "a bow"
-                               "a terrifying greatbow with spear-sized arrows"))
+                               "a terrifying greatbow with spear-sized arrows"
+                               30
+                               "ready your arrow-spear and fire it loudly"))
 
 ;;; Player data
 
 (defn init-player []
   {:current-location :forest
-   :weapon (init-fists)})
+   :weapon (init-fists)
+   :hp 100})
 
 ;;; Location objects
 
@@ -62,6 +73,15 @@
                         :sword (init-sword)
                         :bow (init-bow)}}))
 
+(defn init-monster []
+  (init-object "a monster"
+               (str "A chilling monstrocity. Its skin is covered in spikes and briars,\n"
+                    "and its red eyes want blood. It clearly doesn't like you")
+               [:fights]
+               {:hp 100
+                :deals-damage 20
+                :attack "rips your flesh with its barbed claws"}))
+
 ;;; Location data
 
 (defn init-location [name short-name description connected objects]
@@ -83,8 +103,16 @@
   (init-location "a busy square full of people"
                  "a square"
                  "so grand you're starting to feel a little nauseous."
-                 [:forest, :weapon-shop]
+                 [:forest, :weapon-shop, :cave]
                  {:guard (init-guard)}))
+
+(defn init-cave []
+  (init-location "a dark ominous cave"
+                 "a cave"
+                 (str "so dead silent that the silence feels heavy.\n"
+                      "And at the same time... Was that a growl?")
+                 [:square]
+                 {:monster (init-monster)}))
 
 (defn init-weapon-shop []
   (init-location "a weapon shop"
@@ -110,6 +138,20 @@
   (str "You went to " where "."))
 
 ;; Location object helpers
+
+(defn attack-trade-blows [monster-damage monster-name monster-swing player-damage player-swing]
+  (str "The " monster-name monster-swing ". You take " monster-damage " damage.\n"
+       "You " player-swing ". You hit the " monster-name " for " player-damage " damage."))
+
+(defn monster-ded [monster-damage monster-name monster-swing player-damage player-swing]
+  (str (attack-trade-blows monster-damage monster-name monster-swing player-damage player-swing)
+       "\nHaving received a fatal wound from you, the " monster-name " dies in agony.\n"
+       "Congrats! You get a gold medal for vanquishing a " monster-name "!\n"
+       "No clue what you're going to do with it though..."))
+
+(defn player-ded [monster-damage monster-name monster-swing]
+  (str "The " monster-name monster-swing ". You take " monster-damage " damage.\n"
+       "The blow ends up being fatal. You bleed out and die from your wounds..."))
 
 (defn bought-thing [thing-str seller-name]
   (str "You got " thing-str " from " seller-name ". Congrats!"))
@@ -137,6 +179,15 @@
   (str "You see " description "."))
 
 ;;; Error helpers
+
+(defn attack-what []
+  (str "What exactly wouldja like ta smack?"))
+
+(defn wont-fight-you [target]
+  (str "You don't think it's a good idea to smack a " target "..."))
+
+(defn no-object-to-attack [target-str]
+  (str "You don't see any " target-str "s to bully."))
 
 (defn doesnt-sell-this [seller-name thing-str]
   (str seller-name " doesn't have any " thing-str "s to sell you.\n"

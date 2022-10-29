@@ -36,6 +36,11 @@
 
 ;; Change actions:
 
+(defn perform-attack [world tags]
+  (match (vec tags)
+    ["attack"] (data/attack-what)
+    ["attack" & target] (world/attack-target world target)))
+
 (defn perform-buy [world tags]
   (match (vec tags)
     ["buy"] [world (data/buy-error)]
@@ -89,6 +94,7 @@
     "go"    [:change (perform-go world tags)]
     "talk"  [:change (perform-talk world tags)]
     "buy"   [:change (perform-buy world tags)]
+    "attack" [:change (perform-attack world tags)]
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
 

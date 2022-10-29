@@ -83,6 +83,41 @@
       (throw (Exception. "what-are-you-selling: UNREACHABLE: a seller object doesn't sell anything?"))
       (data/i-sell-these (str/join ", " (map #(get-in sells-map [(key %) :name]) sells-map))))))
 
+;; The attack action
+
+(defn attack-update-hps [world player-new-hp monster-id monster-new-hp]
+  (assoc-in (assoc-in world [:player :hp] player-new-hp) [:locations (current-loc-id world) :objects monster-id :behavior :hp] monster-new-hp))
+
+(defn check-who-dies-and-attack [world target-id target-object]
+  (let [monster-hp (get-in target-object [:behavior :hp])
+        monster-damage (get-in target-object [:behavior :deals-damage])
+        monster-swing (get-in target-object [:behavior :attack])
+        player-hp (get-in world [:player :hp])
+        player-damage (get-in world [:player :weapon :damage])
+        player-swing (get-in world [:player :weapon :swing])
+        player-new-hp (- player-hp monster-damage)
+        monster-new-hp (- monster-hp player-damage)
+        player-dies? (<= player-new-hp 0)
+        monster-dies? (<= monster-new-hp 0)]
+    (match [player-dies? monster-dies?]
+      [true _] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/player-ded monster-damage (keyword->str target-id) monster-swing)]
+      [false false] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/attack-trade-blows monster-damage (keyword->str target-id) monster-swing player-damage player-swing)]
+      [false true] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/monster-ded monster-damage (keyword->str target-id) monster-swing player-damage player-swing)])))
+
+(defn check-hostility-and-attack [world target-id target-object]
+  (if (object-has-prop? world target-id :fights)
+    (check-who-dies-and-attack world target-id target-object)
+    [world (data/wont-fight-you (keyword->str target-id))]))
+
+(defn attack-target [world target]
+  (let [target-str (str/join " " target)
+        target-id (str->keyword target-str)
+        current-loc (get-current-loc world)
+        target-object (get-object-by-keyword current-loc target-id)]
+    (match target-object
+      nil [world (data/no-object-to-attack target-str)]
+      o (check-hostility-and-attack world target-id o))))
+
 ;; The buy action
 
 (defn buy-change-world [world thing]
@@ -234,4 +269,5 @@
   {:player (data/init-player)
    :locations {:forest (data/init-forest) ; TODO: new location: cave
                :square (data/init-square)
-               :weapon-shop (data/init-weapon-shop)}})
+               :weapon-shop (data/init-weapon-shop)
+               :cave (data/init-cave)}})
