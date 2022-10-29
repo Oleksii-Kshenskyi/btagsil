@@ -78,10 +78,44 @@
       (nth (nth seller-objects 0) 1))))
 
 (defn what-are-you-selling [seller-object]
-  (let [sells-vec (get-in seller-object [:behavior :sells])]
-    (if (empty? sells-vec)
+  (let [sells-map (get-in seller-object [:behavior :sells])]
+    (if (empty? sells-map)
       (throw (Exception. "what-are-you-selling: UNREACHABLE: a seller object doesn't sell anything?"))
-      (data/i-sell-these (str/join ", " (map keyword->str sells-vec))))))
+      (data/i-sell-these (str/join ", " (map #(get-in sells-map [(key %) :name]) sells-map))))))
+
+;; The buy action
+
+(defn buy-change-world [world thing]
+  (let [changed-world (assoc-in world [:player :weapon] thing)]
+    changed-world))
+
+(defn just-buy-already [world thing seller-id]
+  (let [thing-str (:name thing)
+        seller-name (str "The " (keyword->str seller-id))
+        changed-world (buy-change-world world thing)
+        response (data/bought-thing thing-str seller-name)]
+    [changed-world response]))
+
+(defn buy-thing-from-object [world thing-str seller-id seller-object]
+  (let [sells? (object-has-prop? world seller-id :sells)
+        thing-id (str->keyword thing-str)
+        thing (thing-id (get-in seller-object [:behavior :sells]))
+        sells-thing? (boolean thing)
+        seller-name (str "The " (keyword->str seller-id))]
+    (match [sells? sells-thing?]
+      [true true] (just-buy-already world thing seller-id)
+      [true false] [world (data/doesnt-sell-this seller-name thing-str)]
+      [false false] [world (data/doesnt-sell-anything seller-name)]
+      [false true] (throw (Exception. (str "world/buy-thing-from-object: UNREACHABLE: object is not a seller but sells something anyway?"))))))
+
+(defn buy-from-seller [world thing seller]
+  (let [thing-str (str thing)
+        seller-str (str/join " " seller)
+        seller-id (str->keyword seller-str)
+        seller-object (get-in (get-current-loc world) [:objects seller-id])]
+    (if (empty? seller-object)
+      [world (data/not-valid-seller-object-error seller-str)]
+      (buy-thing-from-object world thing-str seller-id seller-object))))
 
 ;; The talk action
 

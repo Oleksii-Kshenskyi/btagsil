@@ -36,6 +36,13 @@
 
 ;; Change actions:
 
+(defn perform-buy [world tags]
+  (match (vec tags)
+    ["buy"] [world (data/buy-error)]
+    ["buy" thing "from"] [world (data/buy-thing-from-who-error thing)]
+    ["buy" thing "from" & seller] (world/buy-from-seller world thing seller)
+    ["buy" & _something] [world (data/only-buying-from-someone-allowed-error)]))
+
 (defn respond-talk [world tags]
   (match (vec tags)
     ["talk" "to"] (data/talk-to-what-error)
@@ -81,6 +88,7 @@
     "show"  [:debug (act-show world tags)]
     "go"    [:change (perform-go world tags)]
     "talk"  [:change (perform-talk world tags)]
+    "buy"   [:change (perform-buy world tags)]
     nil     [:empty]
     :else   [:unknown (join " " tags)]))
 

@@ -8,12 +8,12 @@
 
 (defn init-fists [] (init-weapon "bare fists"
                                  "just your bare fists"))
-(defn init-axe [] (init-weapon "a greataxe"
-                               "an enormous razor-sharp greataxe with blades on both ends of the hilt."))
-(defn init-sword [] (init-weapon "a claymore"
-                                 "a long beautiful claymore with an ornamental pattern on the blade."))
-(defn init-bow [] (init-weapon "a greatbow"
-                               "a terrifying greatbow with spear-sized arrows."))
+(defn init-axe [] (init-weapon "an axe"
+                               "an enormous razor-sharp greataxe with blades on both ends of the hilt"))
+(defn init-sword [] (init-weapon "a sword"
+                                 "a long beautiful claymore with an ornamental pattern on the blade"))
+(defn init-bow [] (init-weapon "a bow"
+                               "a terrifying greatbow with spear-sized arrows"))
 
 ;;; Player data
 
@@ -58,7 +58,9 @@
                (str "a shopkeeper running the weapon shop.\n"
                     "He's throwing glances at you hoping you'll buy a weapon from him")
                [:talks, :sells]
-               {:sells [:an-axe, :a-sword, :a-bow]}))
+               {:sells {:axe (init-axe)
+                        :sword (init-sword)
+                        :bow (init-bow)}}))
 
 ;;; Location data
 
@@ -84,7 +86,6 @@
                  [:forest, :weapon-shop]
                  {:guard (init-guard)}))
 
-;; TODO: There should be a shopkeeper in the shop. He can sell you weapons.
 (defn init-weapon-shop []
   (init-location "a weapon shop"
                  "a weapon shop"
@@ -110,6 +111,9 @@
 
 ;; Location object helpers
 
+(defn bought-thing [thing-str seller-name]
+  (str "You got " thing-str " from " seller-name ". Congrats!"))
+
 (defn guard-says [guard-says guard-name]
   (str guard-name " says: '" guard-says "'"))
 
@@ -133,6 +137,27 @@
   (str "You see " description "."))
 
 ;;; Error helpers
+
+(defn doesnt-sell-this [seller-name thing-str]
+  (str seller-name " doesn't have any " thing-str "s to sell you.\n"
+       "Try 'what can i buy' to see what you can buy here."))
+
+(defn doesnt-sell-anything [seller-name]
+  (str seller-name " doesn't seem to be thrilled about the idea of selling you stuff."))
+
+(defn not-valid-seller-object-error [seller-str]
+  (str "You don't see any " seller-str "s around that would be willing to sell you stuff."))
+
+(defn buy-error []
+  (str "Buy what, from who?\n"
+       "Try 'buy <something> from <someone>.'\n"
+       "You can also ask 'what can i buy' to see what's for sale."))
+
+(defn buy-thing-from-who-error [thing]
+  (str "Who do you want to buy " thing " from?"))
+
+(defn only-buying-from-someone-allowed-error []
+  (str "You can only buy things 'from' someone."))
 
 (defn no-object-to-talk-to-error [object-name-str]
   (str "You don't seem to see any " object-name-str "s that would be willing to talk."))
