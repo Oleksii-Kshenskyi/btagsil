@@ -75,7 +75,7 @@
 
 (defn init-monster []
   (init-object "a monster"
-               (str "A chilling monstrocity. Its skin is covered in spikes and briars,\n"
+               (str "a chilling monstrocity. Its skin is covered in spikes and briars,\n"
                     "and its red eyes want blood. It clearly doesn't like you")
                [:fights]
                {:hp 100
@@ -140,7 +140,7 @@
 ;; Location object helpers
 
 (defn attack-trade-blows [monster-damage monster-name monster-swing player-damage player-swing]
-  (str "The " monster-name monster-swing ". You take " monster-damage " damage.\n"
+  (str "The " monster-name " " monster-swing ". You take " monster-damage " damage.\n"
        "You " player-swing ". You hit the " monster-name " for " player-damage " damage."))
 
 (defn monster-ded [monster-damage monster-name monster-swing player-damage player-swing]
@@ -179,6 +179,9 @@
   (str "You see " description "."))
 
 ;;; Error helpers
+
+(defn stop-it-its-already-dead [monster-name]
+  (str "Stop it, the " monster-name " is already dead!"))
 
 (defn attack-what []
   (str "What exactly wouldja like ta smack?"))

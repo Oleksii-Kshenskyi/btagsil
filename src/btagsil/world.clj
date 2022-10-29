@@ -104,9 +104,14 @@
       [false false] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/attack-trade-blows monster-damage (keyword->str target-id) monster-swing player-damage player-swing)]
       [false true] [(attack-update-hps world player-new-hp target-id monster-new-hp) (data/monster-ded monster-damage (keyword->str target-id) monster-swing player-damage player-swing)])))
 
+(defn check-already-dead-and-attack [world target-id target-object]
+  (if (> (get-in target-object [:behavior :hp]) 0)
+    (check-who-dies-and-attack world target-id target-object)
+    [world (data/stop-it-its-already-dead (keyword->str target-id))]))
+
 (defn check-hostility-and-attack [world target-id target-object]
   (if (object-has-prop? world target-id :fights)
-    (check-who-dies-and-attack world target-id target-object)
+    (check-already-dead-and-attack world target-id target-object)
     [world (data/wont-fight-you (keyword->str target-id))]))
 
 (defn attack-target [world target]
