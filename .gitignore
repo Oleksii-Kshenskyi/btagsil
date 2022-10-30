@@ -1,3 +1,2 @@
-/target
-Cargo.lock
-.vs/
+__init__.py
+*.pyc
