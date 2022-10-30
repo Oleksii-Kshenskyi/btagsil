@@ -1,18 +1,20 @@
 from sys import exit
 
+import data
+
 def repl_unknown(what: list[str]):
-    print(f"Wat? What's a '{' '.join(what)}'?")
+    print(data.unknown_action(' '.join(what)))
 
 def repl_exit(args: list[str]) -> None:
     match args:
         case []:
-            print("Thanks for playing! Hope to see you again soon!\n")
+            print(data.exit_message())
             exit(0)
-        case x: print(f"If you want to exit the game, you don't need any {' '.join(x)}s. Just write 'exit'.")
+        case x: print(data.exit_with_arg(' '.join(x)))
 
 def repl_echo(what: list[str]) -> None:
     match what:
-        case []: print("What do you want to echo?")
+        case []: print(data.echo_what())
         case x: print(f"{' '.join(x)}")
 
 def repl_empty() -> None:
