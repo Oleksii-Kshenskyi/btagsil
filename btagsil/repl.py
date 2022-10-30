@@ -10,6 +10,7 @@ def repl_where(world: World, what: list[str]) -> None:
         case ["is"]: return data.where_is_what()
         case ["is", *what]: return data.dont_know_where_is(' '.join(what))
         case ["am", "i"]: return w.current_loc_description(world)
+        case ["can", "i", "go"]: return w.possible_destinations(world)
         case _: return data.where_error()
 
 def repl_unknown(what: list[str]) -> None:

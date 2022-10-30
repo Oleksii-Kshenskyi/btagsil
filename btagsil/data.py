@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import ABC
 
 # REPL messages
@@ -31,16 +31,19 @@ class Fists(Weapon):
 class Location(ABC):
     name: str
     description: str
+    connected: list[str]
 
 @dataclass
 class Forest(Location):
     name: str = "forest"
     description: str = "a beautiful rainforest.\nThere's a fresh smell of nature after rain in the air.\nSunshine is filtering through the tall trees, creating a beautiful and peaceful feeling inside."
+    connected: list[str] = field(default_factory=lambda: ["square"])
 
 @dataclass
 class Square(Location):
     name: str = "square"
     description: str = "a gigantic square full of people.\nYou suddenly long for some adventure!"
+    connected: list[str] = field(default_factory=lambda: ["forest"])
 
 @dataclass
 class Player:
@@ -56,6 +59,9 @@ class World:
 
 def describe_loc(name: str, descr: str):
     return f"You're in a {name}. It's {descr}"
+
+def you_can_go_to(destinations: str) -> str:
+    return f"You can go to {destinations} from here."
 
 # Error helpers
 
