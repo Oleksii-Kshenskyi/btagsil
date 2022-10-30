@@ -63,7 +63,30 @@ def describe_loc(name: str, descr: str):
 def you_can_go_to(destinations: str) -> str:
     return f"You can go to {destinations} from here."
 
+# World mutator messages
+
+def you_went_to(loc_name: str) -> str:
+    return f"You went to the {loc_name}."
+
 # Error helpers
+
+# go to errors
+
+def already_there(loc_name: str) -> str:
+    return f"You can't go to the {loc_name}, you're already there!"
+
+def no_such_loc(loc_name):
+    return f"There's no such place as a {loc_name}."
+
+def can_only_go_to_stuff() -> str:
+    return "Sorry, I only know how to go 'to' places."
+
+def go_to_where() -> str:
+    return "Go to... where?"
+
+def cant_go_there_from_here(loc_name: str, current_loc_name: str) -> str:
+    return f"""You can't go to {loc_name} from {current_loc_name}, they're not connected.\n
+               To see where you can go from here, try 'where can i go'."""
 
 # where errors
 
