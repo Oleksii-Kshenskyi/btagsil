@@ -31,11 +31,29 @@ class Fists(Weapon):
 class Object(ABC):
     name: str
     description: str
+    properties: list[str]
+    behavior: dict
 
 @dataclass
 class Guard(Object):
     name: str = "guard"
-    description: str = "a burly muscular man in heavy armor wielding a halberd.\nHe's guarding the peace of the people who visit the square.\nHe seems friendly and doesn't mind an occasional chat with the visitors."
+    description: str = "a burly muscular man in heavy armor wielding a halberd.\nHe's guarding the peace of the people who visit the square.\nHe seems friendly and doesn't mind an occasional chat with the visitors"
+    properties: list[str] = field(default_factory = lambda: ["talks"])
+    behavior: dict = field(default_factory = lambda: {"pandora's box": [
+                                                      "How's your day going today, Your Highness?",
+                                                      "Did you know that dragons can fly?",
+                                                      "I've been thinking about the purpose of my life a lot recently... Why am I here?",
+                                                      "I want to kiss a girl so much...",
+                                                      "I'm a bit under the weather today, apologies.",
+                                                      "You look lovely today, Your Highness!",
+                                                      "WOW! The hat REALLY suits you! So stylish!",
+                                                      "It's important to remember to brush your teeth every morning.",
+                                                      "A bottle of fine ale would hit the spot right about now...",
+                                                      "It's impressive how quickly these tourists litter the square. Ugh.",
+                                                      "Did you know there's a fine weapon shop just nearby? Try going there!",
+                                                      "Are you tired?",
+                                                      "I remember that time I was a wee little lad...",
+                                                     ]})
 
 @dataclass
 class Location(ABC):
@@ -84,12 +102,32 @@ def look_around(found: str) -> str:
 def look_at_object(name: str, descr: str) -> str:
     return f"You see a {name}. It's {descr}."
 
+def entity_says(name: str, what: str) -> str:
+    return f"The {name} says: '{what}'"
+
 # World mutator messages
 
 def you_went_to(loc_name: str) -> str:
     return f"You went to the {loc_name}."
 
 # Error helpers
+
+# talk errors
+
+def can_only_talk_to_stuff() -> str:
+    return "You can only talk 'to' something."
+
+def talk_to_who() -> str:
+    return "Talk to... who?"
+
+def can_only_talk_like_this() -> str:
+    return "No clue how to talk like this.\nTry 'talk to <object>.\n'look around' shows you which objects are around. Some of them might talk!'"
+
+def object_doesnt_talk(entity: str) -> str:
+    return f"The {entity} doesn't seem to be interested in talking to you."
+
+def talker_object_doesnt_exist(entity: str) -> str:
+    return f"You don't see any {entity}s to talk to."
 
 # go to errors
 

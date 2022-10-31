@@ -1,10 +1,21 @@
+import random as r
+
 import btagsil.data as data
-from btagsil.data import World, Player, Location, Forest, Square
+from btagsil.data import World, Player, Object, Location, Forest, Square
 
 # Utility functions
 
 def articled_enumeration(things: list, article: str) -> str:
     return ', '.join(map(lambda x: article + ' ' + x, things))
+
+def object_has_prop(loc: Location, object_name: str, prop: str) -> bool:
+    object_exists = object_name in loc.objects
+    the_object = loc.objects[object_name] if object_exists else None
+    object_has_the_prop = prop in the_object.properties if object_exists else False
+    return object_has_the_prop
+
+def take_out_of_pandoras_box(the_box: list[str]) -> str:
+    return r.choice(the_box)
 
 # Working with locations
 
@@ -40,6 +51,28 @@ def look_at_object(world, what):
         return data.look_at_object(the_object.name, the_object.description)
     else:
         return data.no_object_around(object_name)
+
+def talk_to_guard(the_talker: Object) -> str:
+    guard_says = take_out_of_pandoras_box(the_talker.behavior["pandora's box"])
+    return data.entity_says(the_talker.name, guard_says)
+
+def choose_talker_and_talk(world: World, entity: str) -> str:
+    the_talker = get_current_loc(world).objects[entity]
+    match entity:
+        case "guard": return talk_to_guard(the_talker)
+        case _: ValueError(f"world.choose_talker_and_talk: Unknown talker '{entity}'")
+
+def talk_to(world: World, entity: list[str]) -> str:
+    current_loc = get_current_loc(world)
+    current_objects = list(current_loc.objects.keys())
+    object_name = ' '.join(entity)
+    object_exists = object_name in current_objects
+    object_talks = object_has_prop(current_loc, object_name, "talks")
+    match [object_exists, object_talks]:
+        case [True, True]: return choose_talker_and_talk(world, object_name)
+        case [True, False]: return data.object_doesnt_talk(object_name)
+        case [False, False]: return data.talker_object_doesnt_exist(object_name)
+        case [False, True]: raise ValueError("world.talk_to(): UNREACHABLE: an object that doesn't exist but talks?!")
 
 
 # Actions that mutate the World
