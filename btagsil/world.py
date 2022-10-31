@@ -78,6 +78,19 @@ def talk_to(world: World, entity: list[str]) -> str:
         case [False, False]: return data.talker_object_doesnt_exist(object_name)
         case [False, True]: raise ValueError("world.talk_to(): UNREACHABLE: an object that doesn't exist but talks?!")
 
+def get_purchase_options(seller: Object) -> str:
+    options = list(seller.behavior["sells"].keys())
+    return data.you_can_buy_this(articled_enumeration(options, 'the'))
+
+def purchase_options(world: World) -> str:
+    current_loc = get_current_loc(world)
+    current_objects = current_loc.objects.values()
+    sellers = list(filter(lambda o: object_has_prop(current_loc, o.name, "sells"), current_objects))
+    match len(sellers):
+        case 0: return data.no_one_is_selling()
+        case 1: return get_purchase_options(sellers[0])
+        case _: raise ValueError("world.purchase_options(): UNREACHABLE: more than 1 seller at current location?!")
+
 
 # Actions that mutate the World
 

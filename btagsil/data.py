@@ -140,6 +140,9 @@ def shopkeeper_line() -> str:
 def entity_says(name: str, what: str) -> str:
     return f"The {name} says: '{what}'"
 
+def you_can_buy_this(options: str) -> str:
+    return f"You can buy {options} here."
+
 def thanks_for_purchase(seller_name: str, thing_purchased: str) -> str:
     return f"The {seller_name} says: 'Thanks for buying the {thing_purchased}!'"
 
@@ -163,6 +166,9 @@ def buy_something_from_someone_pls() -> str:
 
 def seller_does_not_exist(seller_name: str) -> str:
     return f"You don't see any {seller_name}s willing to sell you anything around here."
+
+def no_one_is_selling() -> str:
+    return "You can't buy anything here."
 
 def seller_doesnt_sell(seller_name: str) -> str:
     return f"The {seller_name} doesn't seem interested in selling you stuff."
@@ -218,6 +224,20 @@ def where_error() -> str:
 
 def dont_know_where_is(what: str) -> str:
     return f"Sorry, no idea where {what} is ¯\_(ツ)_/¯"
+
+# what errors
+
+def what_what() -> str:
+    return "What 'what'?"
+
+def what_is_what() -> str:
+    return "What is... what?"
+
+def what_is_thing(thing: str) -> str:
+    return f"I don't know what '{thing}' is ¯\_(ツ)_/¯"
+
+def what_confused() -> str:
+    return "What are you trying to ask?\nMaybe try 'what is <object>' or 'what can i buy'?"
 
 # look errors
 

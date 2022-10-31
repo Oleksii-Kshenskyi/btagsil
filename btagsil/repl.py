@@ -15,6 +15,14 @@ def repl_where(world: World, what: list[str]) -> str:
         case ["can", "i", "go"]: return w.possible_destinations(world)
         case _: return data.where_error()
 
+def repl_what(world: World, what: list[str]) -> str:
+    match what:
+        case []: return data.what_what()
+        case ["is"]: return data.what_is_what()
+        case ["is", *thing]: return data.what_is_thing(' '.join(thing))
+        case ["can", "i", "buy"]: return w.purchase_options(world)
+        case _: return data.what_confused()
+
 def repl_look(world: World, what: list[str]) -> str:
     match what:
         case []: return data.empty_look()
@@ -77,6 +85,7 @@ def repl_once(world: World, input: str) -> None:
         case ["echo", *args]: repl_echo(args)
         case ["exit", *lol]: repl_exit(lol)
         case ["where", *what]: print(repl_where(world, what))
+        case ["what", *what]: print(repl_what(world, what))
         case ["look", *what]: print(repl_look(world, what))
         case ["talk", *who]: print(repl_talk(world, who))
         case ["go", *where]: print(repl_go(world, where))
