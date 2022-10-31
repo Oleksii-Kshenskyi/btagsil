@@ -1,7 +1,7 @@
 import random as r
 
 import btagsil.data as data
-from btagsil.data import World, Player, Object, Location, Forest, Square, WeaponShop
+from btagsil.data import World, Player, Weapon, Object, Location, Forest, Square, WeaponShop
 
 # Utility functions
 
@@ -80,6 +80,29 @@ def talk_to(world: World, entity: list[str]) -> str:
 
 
 # Actions that mutate the World
+
+# The buy action
+
+def perform_purchase(world: World, the_thing: Weapon, the_object: Object) -> str:
+    world.player.weapon = the_thing
+    return data.thanks_for_purchase(the_object.name, the_thing.name)
+
+def buy_thing_from_seller(world: World, thing: str, seller: list[str]) -> str:
+    seller_name = ' '.join(seller)
+    current_loc = get_current_loc(world)
+    current_objects = current_loc.objects
+    seller_exists = seller_name in current_objects
+    can_buy_from_seller = object_has_prop(current_loc, seller_name, "sells") if seller_exists else False
+    the_object = current_loc.objects[seller_name] if seller_exists else None
+    assortment = the_object.behavior["sells"] if can_buy_from_seller else None
+    thing_is_sold = thing in assortment if can_buy_from_seller else False
+    the_thing = assortment[thing] if thing_is_sold else None
+
+    match [seller_exists, can_buy_from_seller, thing_is_sold]:
+        case [False, _, _]: return data.seller_does_not_exist(seller_name)
+        case [_, False, _]: return data.seller_doesnt_sell(seller_name)
+        case [_, _, False]: return data.seller_doesnt_sell_thing(seller_name, thing)
+        case _: return perform_purchase(world, the_thing, the_object)
 
 # The go action
 

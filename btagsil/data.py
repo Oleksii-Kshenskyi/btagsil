@@ -140,12 +140,35 @@ def shopkeeper_line() -> str:
 def entity_says(name: str, what: str) -> str:
     return f"The {name} says: '{what}'"
 
+def thanks_for_purchase(seller_name: str, thing_purchased: str) -> str:
+    return f"The {seller_name} says: 'Thanks for buying the {thing_purchased}!'"
+
 # World mutator messages
 
 def you_went_to(loc_name: str) -> str:
     return f"You went to the {loc_name}."
 
 # Error helpers
+
+# buy errors
+
+def buy_what_from_who() -> str:
+    return "Buy... what? And who to buy it from?\nTry 'buy <thing> from <seller>'."
+
+def buy_from_who(thing: str) -> str:
+    return f"Buy {thing} from... who?"
+
+def buy_something_from_someone_pls() -> str:
+    return "You can only buy stuff 'from' someone.\nTry 'buy <thing> from <seller>'."
+
+def seller_does_not_exist(seller_name: str) -> str:
+    return f"You don't see any {seller_name}s willing to sell you anything around here."
+
+def seller_doesnt_sell(seller_name: str) -> str:
+    return f"The {seller_name} doesn't seem interested in selling you stuff."
+
+def seller_doesnt_sell_thing(seller_name: str, thing: str) -> str:
+    return f"The {seller_name} doesn't have any {thing}s to sell you.\nTry 'what can i buy' to see what they're selling."
 
 # talk errors
 
