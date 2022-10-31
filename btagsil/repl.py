@@ -19,6 +19,7 @@ def repl_look(world: World, what: list[str]) -> str:
     match what:
         case []: return data.empty_look()
         case ["at"]: return data.look_at_what()
+        case ["at", "my", "weapon"]: return data.look_at_weapon(world.player.weapon.description)
         case ["at", *what]: return w.look_at_object(world, what)
         case ["around"]: return w.look_around(world)
         case _: return data.can_only_look_like_this()

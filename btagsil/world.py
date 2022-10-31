@@ -1,7 +1,7 @@
 import random as r
 
 import btagsil.data as data
-from btagsil.data import World, Player, Object, Location, Forest, Square
+from btagsil.data import World, Player, Object, Location, Forest, Square, WeaponShop
 
 # Utility functions
 
@@ -56,10 +56,14 @@ def talk_to_guard(the_talker: Object) -> str:
     guard_says = take_out_of_pandoras_box(the_talker.behavior["pandora's box"])
     return data.entity_says(the_talker.name, guard_says)
 
+def talk_to_shopkeeper(the_talker: Object) -> str:
+    return data.entity_says(the_talker.name, data.shopkeeper_line())
+
 def choose_talker_and_talk(world: World, entity: str) -> str:
     the_talker = get_current_loc(world).objects[entity]
     match entity:
         case "guard": return talk_to_guard(the_talker)
+        case "shopkeeper": return talk_to_shopkeeper(the_talker)
         case _: ValueError(f"world.choose_talker_and_talk: Unknown talker '{entity}'")
 
 def talk_to(world: World, entity: list[str]) -> str:
@@ -103,4 +107,5 @@ def move_to(world: World, where: list[str]) -> str:
 def init_world() -> World:
     return World(player = Player(),
                  locations = {"forest": Forest(),
-                              "square": Square()})
+                              "square": Square(),
+                              "weapon shop": WeaponShop()})

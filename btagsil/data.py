@@ -28,6 +28,21 @@ class Fists(Weapon):
     description: str = "just your bare fists"
 
 @dataclass
+class Axe(Weapon):
+    name: str = "axe"
+    description: str = "a humongous razor-sharp double-headed greataxe"
+
+@dataclass
+class Sword(Weapon):
+    name: str = "sword"
+    description: str = "a gorgeous long ornamented claymore"
+
+@dataclass
+class Bow(Weapon):
+    name: str = "bow"
+    description: str = "a gigantic greatbow that uses spears as arrows."
+
+@dataclass
 class Object(ABC):
     name: str
     description: str
@@ -56,6 +71,13 @@ class Guard(Object):
                                                      ]})
 
 @dataclass
+class Shopkeeper(Object):
+    name: str = "shopkeeper"
+    description: str = "an old man with an eye for trade.\nHe's throwing glances at you hoping you'll buy something from him."
+    properties: list[str] = field(default_factory = lambda: ["talks", "sells"])
+    behavior: dict = field(default_factory = lambda: {"sells": {"axe": Axe(), "sword": Sword(), "bow": Bow()}})
+
+@dataclass
 class Location(ABC):
     name: str
     description: str
@@ -73,8 +95,15 @@ class Forest(Location):
 class Square(Location):
     name: str = "square"
     description: str = "a gigantic square full of people.\nYou suddenly long for some adventure!"
-    connected: list[str] = field(default_factory = lambda: ["forest"])
+    connected: list[str] = field(default_factory = lambda: ["forest", "weapon shop"])
     objects: dict[str, Object] = field(default_factory = lambda: {"guard": Guard()})
+
+@dataclass
+class WeaponShop(Location):
+    name: str = "weapon shop"
+    description: str = "overflowing with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye."
+    connected: list[str] = field(default_factory = lambda: ["square"])
+    objects: dict[str, Object] = field(default_factory = lambda: {"shopkeeper": Shopkeeper()})
 
 @dataclass
 class Player:
@@ -96,11 +125,17 @@ def you_can_go_to(destinations: str) -> str:
 
 # Object helpers
 
+def look_at_weapon(descr: str) -> str:
+    return f"You see {descr}."
+
 def look_around(found: str) -> str:
     return f"You see {found} here."
 
 def look_at_object(name: str, descr: str) -> str:
     return f"You see a {name}. It's {descr}."
+
+def shopkeeper_line() -> str:
+    return "Stop talking and buy something already, you flirtatious vagabond!"
 
 def entity_says(name: str, what: str) -> str:
     return f"The {name} says: '{what}'"
