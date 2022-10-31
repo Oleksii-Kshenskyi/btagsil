@@ -1,6 +1,11 @@
 import btagsil.data as data
 from btagsil.data import World, Player, Location, Forest, Square
 
+# Utility functions
+
+def articled_enumeration(things: list, article: str) -> str:
+    return ', '.join(map(lambda x: article + ' ' + x, things))
+
 # Working with locations
 
 def get_current_loc(world: World) -> Location:
@@ -14,8 +19,28 @@ def current_loc_description(world: World) -> str:
 
 def possible_destinations(world: World) -> str:
     current_loc = get_current_loc(world)
-    destinations_text = ', '.join(map(lambda x: 'the ' + x, current_loc.connected))
+    destinations_text = articled_enumeration(current_loc.connected, 'the')
     return data.you_can_go_to(destinations_text)
+
+# Navigational actions
+
+def look_around(world: World) -> str:
+    object_names = list(get_current_loc(world).objects.keys())
+    match object_names:
+        case []: return data.nothing_to_look_at()
+        case names: return data.look_around(articled_enumeration(names, 'a'))
+
+def look_at_object(world, what):
+    object_name = ' '.join(what)
+    cur_objects = get_current_loc(world).objects
+    object_exists = object_name in cur_objects
+
+    if object_exists:
+        the_object = cur_objects[object_name]
+        return data.look_at_object(the_object.name, the_object.description)
+    else:
+        return data.no_object_around(object_name)
+
 
 # Actions that mutate the World
 
