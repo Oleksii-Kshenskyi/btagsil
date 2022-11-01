@@ -54,6 +54,11 @@ def repl_buy(world: World, what: list[str]) -> str:
         case [thing, "from"]: return data.buy_from_who(thing)
         case [thing, "from", *seller]: return w.buy_thing_from_seller(world, thing, seller)
         case _: return data.buy_something_from_someone_pls()
+
+def repl_attack(world: World, target: list[str]) -> str:
+    match target:
+        case []: return data.who_are_we_smacking()
+        case [*the_object]: return w.smack(world, ' '.join(the_object))
         
 
 # REPL actions
@@ -90,5 +95,6 @@ def repl_once(world: World, input: str) -> None:
         case ["talk", *who]: print(repl_talk(world, who))
         case ["go", *where]: print(repl_go(world, where))
         case ["buy", *what]: print(repl_buy(world, what))
+        case ["attack", *target]: print(repl_attack(world, target))
         case wtf: repl_unknown(wtf)
     print() if tags else print(end="", sep="")

@@ -21,26 +21,36 @@ def echo_what():
 class Weapon(ABC):
     name: str
     description: str
+    damage: int
+    swing: str
 
 @dataclass
 class Fists(Weapon):
     name: str = "bare fists"
     description: str = "just your bare fists"
+    damage: int = 5
+    swing: str = "punch clumsily with your fist"
 
 @dataclass
 class Axe(Weapon):
     name: str = "axe"
     description: str = "a humongous razor-sharp double-headed greataxe"
+    damage: int = 50
+    swing: str = "perform a wide cleave with your gigantic axe"
 
 @dataclass
 class Sword(Weapon):
     name: str = "sword"
     description: str = "a gorgeous long ornamented claymore"
+    damage: int = 40
+    swing: str = "perform a skillful overhead slash with your claymore"
 
 @dataclass
 class Bow(Weapon):
     name: str = "bow"
-    description: str = "a gigantic greatbow that uses spears as arrows."
+    description: str = "a gigantic greatbow that uses spears as arrows"
+    damage: int = 30
+    swing: str = "ready your humongous bow and fire one of your arrow-spears with a heavy thunk"
 
 @dataclass
 class Object(ABC):
@@ -73,9 +83,18 @@ class Guard(Object):
 @dataclass
 class Shopkeeper(Object):
     name: str = "shopkeeper"
-    description: str = "an old man with an eye for trade.\nHe's throwing glances at you hoping you'll buy something from him."
+    description: str = "an old man with an eye for trade.\nHe's throwing glances at you hoping you'll buy something from him"
     properties: list[str] = field(default_factory = lambda: ["talks", "sells"])
     behavior: dict = field(default_factory = lambda: {"sells": {"axe": Axe(), "sword": Sword(), "bow": Bow()}})
+
+@dataclass
+class Monster(Object):
+    name: str = "monster"
+    description: str = "a chilling monstrocity. It has briars and spikes all over its hardened skin.\nIt clearly doesn't like you"
+    properties: list[str] = field(default_factory = lambda: ["fights"])
+    behavior: dict = field(default_factory = lambda: {"hp": 100,
+                                                      "damage": 20,
+                                                      "swing": "roars and tears you with its spiky claws"})
 
 @dataclass
 class Location(ABC):
@@ -95,20 +114,28 @@ class Forest(Location):
 class Square(Location):
     name: str = "square"
     description: str = "a gigantic square full of people.\nYou suddenly long for some adventure!"
-    connected: list[str] = field(default_factory = lambda: ["forest", "weapon shop"])
+    connected: list[str] = field(default_factory = lambda: ["forest", "weapon shop", "cave"])
     objects: dict[str, Object] = field(default_factory = lambda: {"guard": Guard()})
 
 @dataclass
 class WeaponShop(Location):
     name: str = "weapon shop"
-    description: str = "overflowing with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye."
+    description: str = "crammed with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye."
     connected: list[str] = field(default_factory = lambda: ["square"])
     objects: dict[str, Object] = field(default_factory = lambda: {"shopkeeper": Shopkeeper()})
+
+@dataclass
+class Cave(Location):
+    name: str = "cave"
+    description: str = "chilly and dark in here and the silence seems almost deafening.\nAlthough, wait... Was that a growl?"
+    connected: list[str] = field(default_factory = lambda: ["square"])
+    objects: dict[str, Object] = field(default_factory = lambda: {"monster": Monster()})
 
 @dataclass
 class Player:
     current_location: str = "forest"
     weapon: Weapon = Fists()
+    hp: int = 100
 
 @dataclass
 class World:
@@ -146,12 +173,35 @@ def you_can_buy_this(options: str) -> str:
 def thanks_for_purchase(seller_name: str, thing_purchased: str) -> str:
     return f"The {seller_name} says: 'Thanks for buying the {thing_purchased}!'"
 
+def mutually_smack(player_swing: str, player_new_hp: int, target_name: str, target_swing: str, target_new_hp: int) -> str:
+    return f"The {target_name} {target_swing}. You have {player_new_hp} HP now.\nYou {player_swing}. The {target_name} has {target_new_hp} HP now."
+
+def target_dead(target_name: str) -> str:
+    return f"The {target_name} collapses to the ground and dies in agony.\nCongrats, you won, here's your medal!\nNo clue what you're gonna do with it though..."
+
+def you_are_ded(target_name: str, target_swing: str) -> str:
+    return f"The {target_name} {target_swing}.\nThe smack turns out to be fatal. You die from your wounds..."
+
 # World mutator messages
 
 def you_went_to(loc_name: str) -> str:
     return f"You went to the {loc_name}."
 
 # Error helpers
+
+# attack errors
+
+def who_are_we_smacking() -> str:
+    return "Who do ya want ta smack?"
+
+def stop_it_its_already_dead(target: str) -> str:
+    return f"Stop it, the {target} is already dead!"
+
+def no_objects_to_smack(target: str) -> str:
+    return f"You don't see any {target}s to smack."
+
+def bad_idea_to_smack(target: str) -> str:
+    return f"You ponder smacking the {target} for a second, but then admit it was a bad idea and reconsider."
 
 # buy errors
 
@@ -208,8 +258,8 @@ def go_to_where() -> str:
     return "Go to... where?"
 
 def cant_go_there_from_here(loc_name: str, current_loc_name: str) -> str:
-    return f"""You can't go to {loc_name} from {current_loc_name}, they're not connected.\n
-               To see where you can go from here, try 'where can i go'."""
+    return (f"You can't go to {loc_name} from {current_loc_name}, they're not connected.\n" +
+            "To see where you can go from here, try 'where can i go'.")
 
 # where errors
 

@@ -1,7 +1,7 @@
 import random as r
 
 import btagsil.data as data
-from btagsil.data import World, Player, Weapon, Object, Location, Forest, Square, WeaponShop
+from btagsil.data import World, Player, Weapon, Object, Location, Forest, Square, WeaponShop, Cave
 
 # Utility functions
 
@@ -94,6 +94,56 @@ def purchase_options(world: World) -> str:
 
 # Actions that mutate the World
 
+# the attack action
+
+def assign_new_hp(world: World, the_target: Object, player_new_hp: int, target_new_hp: int) -> None:
+    world.player.hp = player_new_hp
+    the_target.behavior["hp"] = target_new_hp
+
+def perform_mutual_smacking(world: World, the_target: Object, player_new_hp: int, target_new_hp: int) -> str:
+    assign_new_hp(world, the_target, player_new_hp, target_new_hp)
+    return data.mutually_smack(world.player.weapon.swing, player_new_hp, the_target.name, the_target.behavior["swing"], target_new_hp)
+
+def you_win(world: World, the_target: Object, player_new_hp: int, target_new_hp: int) -> str:
+    return perform_mutual_smacking(world, the_target, player_new_hp, target_new_hp) + '\n' + data.target_dead(the_target.name)
+
+def you_are_ded(target_name: str, target_swing: str) -> None:
+    print(data.you_are_ded(target_name, target_swing) + '\n')
+    exit(0)
+
+def check_who_dies_and_smack(world: World, the_target: Object) -> str:
+    player_hp = world.player.hp
+    player_damage = world.player.weapon.damage
+    target_hp = the_target.behavior["hp"]
+    target_damage = the_target.behavior["damage"]
+
+    player_new_hp = player_hp - target_damage
+    target_new_hp = target_hp - player_damage
+
+    does_target_die = target_new_hp <= 0
+    does_player_die = player_new_hp <= 0
+    
+    match [does_player_die, does_target_die]:
+        case [False, False]: return perform_mutual_smacking(world, the_target, player_new_hp, target_new_hp)
+        case [True, _]: return you_are_ded(the_target.name, the_target.behavior["swing"])
+        case [False, True]: return you_win(world, the_target, player_new_hp, target_new_hp)
+
+def smack(world: World, target: str) -> str:
+    current_loc = get_current_loc(world)
+    current_objects = current_loc.objects
+
+    does_target_exist = target in current_objects
+    the_target = current_objects[target] if does_target_exist else None
+    does_target_fight = object_has_prop(current_loc, target, "fights") if the_target else False
+    is_target_already_dead = the_target.behavior["hp"] <= 0 if does_target_fight else False
+
+    match [does_target_exist, does_target_fight, is_target_already_dead]:
+        case [True, True, False]: return check_who_dies_and_smack(world, the_target)
+        case [True, True, True]: return data.stop_it_its_already_dead(target)
+        case [False, _, _]: return data.no_objects_to_smack(target)
+        case [_, False, _]: return data.bad_idea_to_smack(target)
+        case _: ValueError(f"world.smack(): UNREACHABLE: unknown fight state: {[does_target_exist, does_target_fight, is_target_already_dead]}!")
+
 # The buy action
 
 def perform_purchase(world: World, the_thing: Weapon, the_object: Object) -> str:
@@ -144,4 +194,5 @@ def init_world() -> World:
     return World(player = Player(),
                  locations = {"forest": Forest(),
                               "square": Square(),
-                              "weapon shop": WeaponShop()})
+                              "weapon shop": WeaponShop(),
+                              "cave": Cave()})
