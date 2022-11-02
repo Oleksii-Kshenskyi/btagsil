@@ -1,15 +1,17 @@
 package btagsil
 
+// REPL's system actions
+
 def replExit(): Unit = {
     println(Text.exitMessage())
-    System.exit(0)
+    System exit 0
 }
 
 def replEcho(what: List[String]): Unit =
-    println(Text.echoed(what.mkString(" ")))
+    println(Text echoed (what mkString " "))
 
 def replUnknown(wtf: List[String]): Unit =
-    println(Text.unknownInput(wtf.mkString(" ")))
+    println(Text unknownInput (wtf mkString " "))
 
 def replEmpty(): Unit = {}
 
