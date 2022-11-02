@@ -1,3 +1,6 @@
-/target
-Cargo.lock
-.vs/
+.bsp
+.metals
+.vscode
+target/
+project/project/
+project/target/
