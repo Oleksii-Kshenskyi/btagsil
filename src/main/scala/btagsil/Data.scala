@@ -47,6 +47,8 @@ object Text:
 
     def you_went_to(where: String): String = "You went to the " + where + "."
 
+    def you_can_go_here(places: String): String = "You can go to " + places + " from here."
+
     // Where errors
 
     def whereWhat(): String = "Where... what?"

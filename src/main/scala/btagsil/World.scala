@@ -2,6 +2,9 @@ package btagsil
 
 import scala.collection.mutable.Map
 
+private def articledEnumeration(what: Array[String], article: String) =
+    what.map(s => article + " " + s) mkString ", "
+
 private def getCurrentLoc(world: World): Location =
     world.locations(world.player.currentLocation)
 
@@ -27,6 +30,10 @@ object Info:
     def currentLocDescription(world: World): String =
         val currentLoc = getCurrentLoc(world)
         Text.locDescription(currentLoc.name, currentLoc.description)
+
+    def possibleDestinations(world: World): String =
+        val connectedText = articledEnumeration(getCurrentLoc(world).connected, "the")
+        Text you_can_go_here connectedText
 
 def initWorld(): World =
     World(Player(),

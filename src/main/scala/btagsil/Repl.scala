@@ -5,6 +5,7 @@ package btagsil
 def actWhere(world: World, what: List[String]): String = what match {
     case List() => Text.whereWhat()
     case List("am", "i") => Info currentLocDescription world
+    case List("can", "i", "go") => Info possibleDestinations world
     case List("is") => Text.whereIsWhat()
     case "is" :: thing => Text dontKnowWhereThingIs (thing mkString " ")
     case _ => Text.wrongWhere()
