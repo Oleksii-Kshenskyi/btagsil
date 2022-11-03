@@ -56,19 +56,24 @@ object Info:
         val entity = if entityExists then Some(currentLoc.objects(entityName)) else None
         if entityExists then Text.you_see_object(entity.get.name, entity.get.description) else Text.no_object_to_look_at(entityName)
 
-    def objectHasProp(entity: Entity, prop: String): Boolean =
-        entity.properties.contains(prop)
+    def objectHasProp(world: World, entity: String, prop: String): Boolean =
+        getCurrentLoc(world).objects(entity).properties.contains(prop)
+
+    def chooseEntityAndTalk(world: World, entityName: String): String = entityName match {
+        case "guard" => talkToGuard(world, getCurrentLoc(world).objects(entityName))
+        case _ => throw Exception("Info.chooseEntityAndTalk(): there should have been a valid talker entity to talk to at this point, but there isn't.")
+    }
 
     def talkToEntity(world: World, entity: List[String]): String =
         val entityName = entity mkString " "
         val currentObjects = getCurrentLoc(world).objects
         val entityExists = currentObjects.contains(entityName)
-        val theEntity = if entityExists then Some(currentObjects(entityName)) else None
-        val entityTalks = if entityExists then objectHasProp(theEntity.get, "talks") else false
-        entity match {
-            case List() => throw Exception("Info.talkToEntity(): UNREACHABLE: at this point the entity name should be set!")
-            case List("guard") => talkToGuard(world, theEntity.get)
-            case _ => Text.no_such_entity_to_talk_to(entity mkString " ")
+        val entityTalks = if entityExists then objectHasProp(world, entityName, "talks") else false
+        Array(entityExists, entityTalks) match {
+            case Array(true, true) => chooseEntityAndTalk(world, entityName)
+            case Array(true, false) => Text.isNotTalkable(entityName)
+            case Array(false, false) => Text.no_such_entity_to_talk_to(entity mkString " ")
+            case _ => throw Exception("Info.talkToEntity(): UNREACHABLE: entity talks but doesn't exist?")
         }
 
 

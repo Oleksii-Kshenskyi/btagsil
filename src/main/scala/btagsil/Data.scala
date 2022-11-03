@@ -122,6 +122,8 @@ object Text:
 
     def no_such_entity_to_talk_to(entityStr: String): String =
         "You don't see any " + entityStr + "s around that would be willing to chat."
+    
+    def isNotTalkable(entityName: String): String = "The idea of talking to you doesn't excite the " + entityName + " that much."
 
     // Go errors
 
