@@ -25,6 +25,12 @@ private def weSellThis(world: World, sellerEntity: Entity): String =
     val goodiesNames = sellerEntity.behavior("sells").asInstanceOf[Map[String, Weapon]].keys.toArray
     Text weSellThese articledEnumeration(goodiesNames, "the")
 
+private def performPurchase(world: World, thing: String, sellerName: String): String =
+    val sellerObject = getCurrentLoc(world).objects(sellerName)
+    val thingSold = sellerObject.behavior("sells").asInstanceOf[Map[String, Weapon]](thing)
+    world.player.weapon = thingSold
+    Text.boughtThingFromSeller(sellerObject.name.capitalize, thing)
+
 object Change:
     def go_to_loc(world: World, where: String): String =
         val currentLoc = getCurrentLoc(world)
@@ -37,6 +43,21 @@ object Change:
             case Array(_, true, _) => Text youreAlreadyThere where
             case Array(_, _, false) => Text.sourceAndDestNotConnected(where, currentLoc.name)
             case _ => move_to_loc(world, where)
+        }
+
+    def buy(world: World, thing: String, seller: List[String]): String =
+        val sellerName = seller mkString " "
+        val currentObjects = getCurrentLoc(world).objects
+
+        val sellerExists = currentObjects.contains(sellerName)
+        val sellerObject = if sellerExists then Some(currentObjects(sellerName)) else None
+        val sellerSells = if sellerExists then currentObjects(sellerName).properties.contains("sells") else false
+        val sellerSellsThing = if sellerSells then sellerObject.get.behavior("sells").asInstanceOf[Map[String, Weapon]].contains(thing) else false
+        Array(sellerExists, sellerSells, sellerSellsThing) match {
+            case Array(false, _, _) => Text.sellerDoesNotExist(sellerName)
+            case Array(_, false, _) => Text.sellerDoesntSell(sellerName)
+            case Array(_, _, false) => Text.sellerDoesntSellThing(sellerName, thing)
+            case _ => performPurchase(world, thing, sellerName)
         }
 
 object Info:

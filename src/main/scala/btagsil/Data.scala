@@ -111,12 +111,16 @@ object Text:
     def youSeeEntity(name: String, description: String): String =
         "You see a " + name + ". It's " + description + "."
 
+    def youSeeYourWeapon(description: String): String = "You see " + description + "."
+
     def entitySays(name: String, saysWhat: String): String =
         name + " says: '" + saysWhat + "'"
 
     def weSellThese(things: String): String = "You can buy " + things + " here."
 
     def shopkeeperLine(): String = "Stop talking and buy something already, you flirtatious vagabond!"
+
+    def boughtThingFromSeller(sellerName: String, thing: String): String = sellerName + " says: 'Thanks for buying the " + thing + "!'"
 
     // Where errors
 
@@ -177,3 +181,17 @@ object Text:
 
     def sourceAndDestNotConnected(where: String, from: String): String =
         "You can't go from " + from + " to " + where + ", they're not connected.\nTry 'where can i go' to see where you can go from here."
+
+    // Buy errors
+
+    def buyWhat(): String = "Buy... what?"
+
+    def needToBuyFromSomeone(): String = "You can only buy something 'from' someone.\nTry 'buy <thing> from <someone>'."
+
+    def buyFromWho(thing: String): String = "Buy " + thing + " from who?"
+
+    def sellerDoesNotExist(sellerName: String): String = "You don't see any " + sellerName + "s around to buy stuff from."
+
+    def sellerDoesntSell(sellerName: String): String = "The " + sellerName + " doesn't seem interested in selling you stuff."
+
+    def sellerDoesntSellThing(sellerName: String, thing: String): String = "The " + sellerName + " doesn't have any " + thing + "s to sell you."

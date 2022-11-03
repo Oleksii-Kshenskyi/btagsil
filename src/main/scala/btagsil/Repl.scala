@@ -23,6 +23,7 @@ def actLook(world: World, where: List[String]): String = where match {
     case List() => Text.tryLookingAtSomething()
     case List("around") => Info lookAround world
     case List("at") => Text.lookAtWhat()
+    case List("at", "my", "weapon") => Text.youSeeYourWeapon(world.player.weapon.description)
     case "at" :: entity => Info.lookAtEntity(world, entity)
     case _ => Text.wrongLook()
 }
@@ -42,6 +43,13 @@ def actGo(world: World, how: List[String]): String = how match {
     case List("to") => Text.go_to_where()
     case "to" :: where => Change.go_to_loc(world, where mkString " ")
     case _ => Text.canOnlyGoToPlaces()
+}
+
+def actBuy(world: World, what: List[String]): String = what match {
+    case List() => Text.buyWhat()
+    case thing :: "from" :: Nil => Text.buyFromWho(thing)
+    case thing :: "from" :: seller => Change.buy(world, thing, seller)
+    case _ => Text.needToBuyFromSomeone()
 }
 
 
@@ -70,6 +78,7 @@ def replOnce(world: World, action: List[String]): Unit = action match {
     case "look" :: where => replRespond(actLook(world, where))
     case "talk" :: target => replRespond(actTalk(world, target))
     case "go" :: how => replRespond(actGo(world, how))
+    case "buy" :: what => replRespond(actBuy(world, what))
     case "echo" :: what => replEcho(what)
 
     case wtf => replUnknown(wtf)
