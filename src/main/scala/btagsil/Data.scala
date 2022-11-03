@@ -114,6 +114,8 @@ object Text:
     def entitySays(name: String, saysWhat: String): String =
         name + " says: '" + saysWhat + "'"
 
+    def weSellThese(things: String): String = "You can buy " + things + " here."
+
     def shopkeeperLine(): String = "Stop talking and buy something already, you flirtatious vagabond!"
 
     // Where errors
@@ -125,6 +127,18 @@ object Text:
     def dontKnowWhereThingIs(thing: String): String = "No clue where " + thing + " is ¯\\_(ツ)_/¯"
 
     def wrongWhere(): String = "Nope. Try 'where is <thing>' or 'where am i' instead."
+
+    // What errors
+
+    def whatWhat(): String = "What 'what'?"
+
+    def whatIsWhat(): String = "What is what?"
+
+    def wrongWhat(): String = "What's that? Try 'what is <something>' or 'what can i buy'."
+
+    def dontKnowWhatThingIs(thing: String): String = "No clue what " + thing + " is ¯\\_(ツ)_/¯"
+
+    def noSellersAround(): String = "You don't see anyone willing to sell you anything around here."
 
     // Look errors
 

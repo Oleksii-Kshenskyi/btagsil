@@ -21,6 +21,10 @@ private def talkToGuard(world: World, theEntity: Entity): String =
     val theBox: Array[String] = theEntity.behavior("pandora's box").asInstanceOf[Array[String]]
     Text.entitySays(theEntity.name.capitalize, take_from_pandoras_box(theBox))
 
+private def weSellThis(world: World, sellerEntity: Entity): String =
+    val goodiesNames = sellerEntity.behavior("sells").asInstanceOf[Map[String, Weapon]].keys.toArray
+    Text weSellThese articledEnumeration(goodiesNames, "the")
+
 object Change:
     def go_to_loc(world: World, where: String): String =
         val currentLoc = getCurrentLoc(world)
@@ -77,6 +81,14 @@ object Info:
             case Array(true, false) => Text.isNotTalkable(entityName)
             case Array(false, false) => Text noSuchEntityToTalkTo (entity mkString " ")
             case _ => throw Exception("Info.talkToEntity(): UNREACHABLE: entity talks but doesn't exist?")
+        }
+
+    def purchaseOptions(world: World): String =
+        val sellers = getCurrentLoc(world).objects.values.filter(o => objectHasProp(world, o.name, "sells")).toList
+        sellers.length match {
+            case 0 => Text.noSellersAround()
+            case 1 => weSellThis(world, sellers(0))
+            case _ => throw Exception("Info.purchaseOptions(): UNREACHABLE: more than one seller on location?!")
         }
 
 
