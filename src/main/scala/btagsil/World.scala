@@ -59,10 +59,13 @@ object Info:
     def objectHasProp(world: World, entity: String, prop: String): Boolean =
         getCurrentLoc(world).objects(entity).properties.contains(prop)
 
-    def chooseEntityAndTalk(world: World, entityName: String): String = entityName match {
-        case "guard" => talkToGuard(world, getCurrentLoc(world).objects(entityName))
-        case _ => throw Exception("Info.chooseEntityAndTalk(): there should have been a valid talker entity to talk to at this point, but there isn't.")
-    }
+    def chooseEntityAndTalk(world: World, entityName: String): String =
+        val theEntity = getCurrentLoc(world).objects(entityName)
+        entityName match {
+            case "guard" => talkToGuard(world, theEntity)
+            case "shopkeeper" => Text.entitySays(theEntity.name.capitalize, Text.shopkeeperLine())
+            case _ => throw Exception("Info.chooseEntityAndTalk(): there should have been a valid talker entity to talk to at this point, but there isn't.")
+        }
 
     def talkToEntity(world: World, entity: List[String]): String =
         val entityName = entity mkString " "
@@ -80,4 +83,5 @@ object Info:
 def initWorld(): World =
     World(Player(),
           Map("forest" -> Forest(),
-              "square" -> Square()))
+              "square" -> Square(),
+              "weapon shop" -> WeaponShop()))

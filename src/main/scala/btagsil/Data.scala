@@ -26,6 +26,18 @@ class Fists() extends Weapon:
     val name: String = "fists"
     val description: String = "just your bare fists"
 
+class Axe() extends Weapon:
+    val name: String = "axe"
+    val description: String = "a humongous razor-sharp double-headed greataxe"
+
+class Sword() extends Weapon:
+    val name: String = "sword"
+    val description: String = "a gorgeous long ornamented claymore"
+
+class Bow() extends Weapon:
+    val name: String = "bow"
+    val description: String = "a gigantic greatbow that uses spears as arrows"
+
 class Player():
     var currentLocation: String = "forest"
     var weapon: Weapon = Fists()
@@ -42,6 +54,12 @@ class Guard() extends Entity:
     val properties: List[String] = List("talks")
     val behavior: Map[String, Any] = Map("pandora's box" -> guardsPandorasBox())
 
+class Shopkeeper() extends Entity:
+    val name: String = "shopkeeper"
+    val description: String = "an old man with an eye towards trade.\nHe's watching you closely hoping you'll buy something from him."
+    val properties: List[String] = List("talks", "sells")
+    val behavior: Map[String, Any] = Map("sells" -> Map("axe" -> Axe(), "sword" -> Sword(), "bow" -> Bow()))
+
 trait Location:
     val name: String
     val description: String
@@ -57,8 +75,14 @@ class Forest() extends Location:
 class Square() extends Location:
     val name: String = "square"
     val description: String = "a spacious square full of people.\nThe spirit of adventure is in the air!"
-    val connected: Array[String] = Array("forest")
+    val connected: Array[String] = Array("forest", "weapon shop")
     var objects: Map[String, Entity] = Map("guard" -> Guard())
+
+class WeaponShop() extends Location:
+    val name: String = "weapon shop"
+    val description: String = "a spacious stone building filled to the brim with weapons to buy.\nThe shopkeeper is watching you closely.\nAn axe, a sword and a bow catch your eye."
+    val connected: Array[String] = Array("square")
+    var objects: Map[String, Entity] = Map("shopkeeper" -> Shopkeeper())
 
 class World(p: Player, ls: Map[String, Location]):
     var player: Player = p
@@ -89,6 +113,8 @@ object Text:
 
     def entitySays(name: String, saysWhat: String): String =
         name + " says: '" + saysWhat + "'"
+
+    def shopkeeperLine(): String = "Stop talking and buy something already, you flirtatious vagabond!"
 
     // Where errors
 
