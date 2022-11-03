@@ -35,6 +35,18 @@ object Info:
         val connectedText = articledEnumeration(getCurrentLoc(world).connected, "the")
         Text you_can_go_here connectedText
 
+    def lookAround(world: World): String =
+        val objects: Array[String] = getCurrentLoc(world).objects.keys.toArray
+        if objects.nonEmpty then Text.you_see_those(articledEnumeration(objects, "the")) else Text.you_see_nothing()
+
+    def lookAtEntity(world: World, entityList: List[String]): String =
+        val entityName = entityList mkString " "
+        val currentLoc = getCurrentLoc(world)
+
+        val entityExists = currentLoc.objects.contains(entityName)
+        val entity = if entityExists then Some(currentLoc.objects(entityName)) else None
+        if entityExists then Text.you_see_object(entity.get.name, entity.get.description) else Text.no_object_to_look_at(entityName)
+
 def initWorld(): World =
     World(Player(),
           Map("forest" -> Forest(),
