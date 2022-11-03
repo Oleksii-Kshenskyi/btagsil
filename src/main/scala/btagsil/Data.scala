@@ -87,6 +87,9 @@ object Text:
     def you_see_object(name: String, description: String): String =
         "You see a " + name + ". It's " + description + "."
 
+    def entity_says(name: String, saysWhat: String): String =
+        name + " says: '" + saysWhat + "'"
+
     // Where errors
 
     def whereWhat(): String = "Where... what?"
@@ -108,6 +111,17 @@ object Text:
     def no_object_to_look_at(entityName: String): String = "You don't see any " + entityName + "s around."
 
     def you_see_nothing(): String = "You don't see anything of importance here."
+
+    // Talk errors
+
+    def talkToSomeonePls(): String = "Okay, I'm talking now. Be more specific though.\nTry 'talk to <someone>'."
+
+    def talkToWho(): String = "Talk to... Who?"
+
+    def wrongTalk(): String = "Try talking 'to' someone. Try looking around to see who's around."
+
+    def no_such_entity_to_talk_to(entityStr: String): String =
+        "You don't see any " + entityStr + "s around that would be willing to chat."
 
     // Go errors
 

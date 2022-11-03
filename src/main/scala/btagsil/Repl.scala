@@ -19,6 +19,14 @@ def actLook(world: World, where: List[String]): String = where match {
     case _ => Text.wrongLook()
 }
 
+def actTalk(world: World, target: List[String]): String = target match {
+    case List() => Text.talkToSomeonePls()
+    case List("to") => Text.talkToWho()
+    case "to" :: entity => Info.talkToEntity(world, entity)
+    case _ => Text.wrongTalk()
+}
+
+
 // Actions that mutate the world
 
 def actGo(world: World, how: List[String]): String = how match {
@@ -50,8 +58,10 @@ def replOnce(world: World, action: List[String]): Unit = action match {
     case List() => replEmpty()
     case List("exit") => replExit()
     case "where" :: what => replRespond(actWhere(world, what))
+    case "look" :: where => replRespond(actLook(world, where))
+    case "talk" :: target => replRespond(actTalk(world, target))
     case "go" :: how => replRespond(actGo(world, how))
     case "echo" :: what => replEcho(what)
-    case "look" :: where => replRespond(actLook(world, where))
+
     case wtf => replUnknown(wtf)
 }
