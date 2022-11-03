@@ -11,7 +11,7 @@ private def getCurrentLoc(world: World): Location =
 
 private def move_to_loc(world: World, where: String): String =
     world.player.currentLocation = where
-    Text you_went_to where
+    Text youWentTo where
 
 private def take_from_pandoras_box(theBox: Array[String]): String =
     val index = Random.nextInt(theBox.length)
@@ -19,7 +19,7 @@ private def take_from_pandoras_box(theBox: Array[String]): String =
 
 private def talkToGuard(world: World, theEntity: Entity): String =
     val theBox: Array[String] = theEntity.behavior("pandora's box").asInstanceOf[Array[String]]
-    Text.entity_says(theEntity.name.capitalize, take_from_pandoras_box(theBox))
+    Text.entitySays(theEntity.name.capitalize, take_from_pandoras_box(theBox))
 
 object Change:
     def go_to_loc(world: World, where: String): String =
@@ -29,8 +29,8 @@ object Change:
         val destinationIsConnected = currentLoc.connected.contains(where)
 
         Array(destinationExists, alreadyThere, destinationIsConnected) match {
-            case Array(false, _, _) => Text no_such_loc where
-            case Array(_, true, _) => Text youre_already_there where
+            case Array(false, _, _) => Text noSuchLoc where
+            case Array(_, true, _) => Text youreAlreadyThere where
             case Array(_, _, false) => Text.sourceAndDestNotConnected(where, currentLoc.name)
             case _ => move_to_loc(world, where)
         }
@@ -42,11 +42,11 @@ object Info:
 
     def possibleDestinations(world: World): String =
         val connectedText = articledEnumeration(getCurrentLoc(world).connected, "the")
-        Text you_can_go_here connectedText
+        Text youCanGoHere connectedText
 
     def lookAround(world: World): String =
         val objects: Array[String] = getCurrentLoc(world).objects.keys.toArray
-        if objects.nonEmpty then Text.you_see_those(articledEnumeration(objects, "the")) else Text.you_see_nothing()
+        if objects.nonEmpty then Text.youSeeThose(articledEnumeration(objects, "the")) else Text.youSeeNothing()
 
     def lookAtEntity(world: World, entityList: List[String]): String =
         val entityName = entityList mkString " "
@@ -54,7 +54,7 @@ object Info:
 
         val entityExists = currentLoc.objects.contains(entityName)
         val entity = if entityExists then Some(currentLoc.objects(entityName)) else None
-        if entityExists then Text.you_see_object(entity.get.name, entity.get.description) else Text.no_object_to_look_at(entityName)
+        if entityExists then Text.youSeeEntity(entity.get.name, entity.get.description) else Text.noObjectToLookAt(entityName)
 
     def objectHasProp(world: World, entity: String, prop: String): Boolean =
         getCurrentLoc(world).objects(entity).properties.contains(prop)
@@ -72,7 +72,7 @@ object Info:
         Array(entityExists, entityTalks) match {
             case Array(true, true) => chooseEntityAndTalk(world, entityName)
             case Array(true, false) => Text.isNotTalkable(entityName)
-            case Array(false, false) => Text.no_such_entity_to_talk_to(entity mkString " ")
+            case Array(false, false) => Text noSuchEntityToTalkTo (entity mkString " ")
             case _ => throw Exception("Info.talkToEntity(): UNREACHABLE: entity talks but doesn't exist?")
         }
 

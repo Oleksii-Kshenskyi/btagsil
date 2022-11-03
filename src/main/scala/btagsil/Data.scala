@@ -76,18 +76,18 @@ object Text:
     def locDescription(name: String, description: String): String =
         "You're in the " + name + ". It's " + description + "."
 
-    def you_went_to(where: String): String = "You went to the " + where + "."
+    def youWentTo(where: String): String = "You went to the " + where + "."
 
-    def you_can_go_here(places: String): String = "You can go to " + places + " from here."
+    def youCanGoHere(places: String): String = "You can go to " + places + " from here."
 
     // Object helpers
 
-    def you_see_those(things: String): String = "You see " + things + " here."
+    def youSeeThose(things: String): String = "You see " + things + " here."
 
-    def you_see_object(name: String, description: String): String =
+    def youSeeEntity(name: String, description: String): String =
         "You see a " + name + ". It's " + description + "."
 
-    def entity_says(name: String, saysWhat: String): String =
+    def entitySays(name: String, saysWhat: String): String =
         name + " says: '" + saysWhat + "'"
 
     // Where errors
@@ -108,9 +108,9 @@ object Text:
 
     def lookAtWhat(): String = "Look at... what?"
 
-    def no_object_to_look_at(entityName: String): String = "You don't see any " + entityName + "s around."
+    def noObjectToLookAt(entityName: String): String = "You don't see any " + entityName + "s around."
 
-    def you_see_nothing(): String = "You don't see anything of importance here."
+    def youSeeNothing(): String = "You don't see anything of importance here."
 
     // Talk errors
 
@@ -120,7 +120,7 @@ object Text:
 
     def wrongTalk(): String = "Try talking 'to' someone. Try looking around to see who's around."
 
-    def no_such_entity_to_talk_to(entityStr: String): String =
+    def noSuchEntityToTalkTo(entityStr: String): String =
         "You don't see any " + entityStr + "s around that would be willing to chat."
     
     def isNotTalkable(entityName: String): String = "The idea of talking to you doesn't excite the " + entityName + " that much."
@@ -129,11 +129,11 @@ object Text:
 
     def go_to_where(): String = "Go to... where?"
 
-    def can_only_go_to_places(): String = "You can only go 'to' places. Try 'go to <place>'.\nAlso try 'where can i go'."
+    def canOnlyGoToPlaces(): String = "You can only go 'to' places. Try 'go to <place>'.\nAlso try 'where can i go'."
 
-    def no_such_loc(where: String): String = "You don't see any paths leading to a " + where + " around here."
+    def noSuchLoc(where: String): String = "You don't see any paths leading to a " + where + " around here."
 
-    def youre_already_there(where: String): String = "You cannot go to the " + where + ", you're already there!"
+    def youreAlreadyThere(where: String): String = "You cannot go to the " + where + ", you're already there!"
 
     def sourceAndDestNotConnected(where: String, from: String): String =
         "You can't go from " + from + " to " + where + ", they're not connected.\nTry 'where can i go' to see where you can go from here."

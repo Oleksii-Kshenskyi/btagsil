@@ -30,10 +30,10 @@ def actTalk(world: World, target: List[String]): String = target match {
 // Actions that mutate the world
 
 def actGo(world: World, how: List[String]): String = how match {
-    case List() => Text.can_only_go_to_places()
+    case List() => Text.canOnlyGoToPlaces()
     case List("to") => Text.go_to_where()
     case "to" :: where => Change.go_to_loc(world, where mkString " ")
-    case _ => Text.can_only_go_to_places()
+    case _ => Text.canOnlyGoToPlaces()
 }
 
 
