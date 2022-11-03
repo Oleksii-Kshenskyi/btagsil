@@ -134,7 +134,7 @@ class Cave(Location):
 @dataclass
 class Player:
     current_location: str = "forest"
-    weapon: Weapon = Fists()
+    weapon: Weapon = field(default_factory = lambda: Fists())
     hp: int = 100
 
 @dataclass
