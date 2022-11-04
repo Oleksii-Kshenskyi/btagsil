@@ -117,4 +117,5 @@ def initWorld(): World =
     World(Player(),
           Map("forest" -> Forest(),
               "square" -> Square(),
-              "weapon shop" -> WeaponShop()))
+              "weapon shop" -> WeaponShop(),
+              "cave" -> Cave()))

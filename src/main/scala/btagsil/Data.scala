@@ -41,24 +41,31 @@ class Bow() extends Weapon:
 class Player():
     var currentLocation: String = "forest"
     var weapon: Weapon = Fists()
+    var hp: Integer = 100
 
 trait Entity:
     val name: String
     val description: String
     val properties: List[String]
-    val behavior: Map[String, Any]
+    var behavior: Map[String, Any]
 
 class Guard() extends Entity:
     val name: String = "guard"
     val description: String = "a big burly man in heavy armor wielding a halberd.\nHe seems friendly and willing to chat."
     val properties: List[String] = List("talks")
-    val behavior: Map[String, Any] = Map("pandora's box" -> guardsPandorasBox())
+    var behavior: Map[String, Any] = Map("pandora's box" -> guardsPandorasBox())
 
 class Shopkeeper() extends Entity:
     val name: String = "shopkeeper"
-    val description: String = "an old man with an eye towards trade.\nHe's watching you closely hoping you'll buy something from him."
+    val description: String = "an old man with an eye towards trade.\nHe's watching you closely hoping you'll buy something from him"
     val properties: List[String] = List("talks", "sells")
-    val behavior: Map[String, Any] = Map("sells" -> Map("axe" -> Axe(), "sword" -> Sword(), "bow" -> Bow()))
+    var behavior: Map[String, Any] = Map("sells" -> Map("axe" -> Axe(), "sword" -> Sword(), "bow" -> Bow()))
+
+class Monster() extends Entity:
+    val name: String = "monster"
+    val description: String = "a nightmarish creature that makes the blood run cold in your veins.\nIt has briars and spikes all over its hardened skin.\nIt clearly doesn't like you"
+    val properties: List[String] = List("fights")
+    var behavior: Map[String, Any] = Map("hp" -> 100, "damage" -> 20, "swing" -> "roars and tears you with its spiky claws")
 
 trait Location:
     val name: String
@@ -75,7 +82,7 @@ class Forest() extends Location:
 class Square() extends Location:
     val name: String = "square"
     val description: String = "a spacious square full of people.\nThe spirit of adventure is in the air!"
-    val connected: Array[String] = Array("forest", "weapon shop")
+    val connected: Array[String] = Array("forest", "weapon shop", "cave")
     var objects: Map[String, Entity] = Map("guard" -> Guard())
 
 class WeaponShop() extends Location:
@@ -83,6 +90,12 @@ class WeaponShop() extends Location:
     val description: String = "a spacious stone building filled to the brim with weapons to buy.\nThe shopkeeper is watching you closely.\nAn axe, a sword and a bow catch your eye."
     val connected: Array[String] = Array("square")
     var objects: Map[String, Entity] = Map("shopkeeper" -> Shopkeeper())
+
+class Cave() extends Location:
+    val name: String = "cave"
+    val description: String = "chilly and dark in here and the silence seems almost deafening.\nAlthough, wait... Was that a growl?"
+    val connected: Array[String] = Array("square")
+    var objects: Map[String, Entity] = Map("monster" -> Monster())
 
 class World(p: Player, ls: Map[String, Location]):
     var player: Player = p
