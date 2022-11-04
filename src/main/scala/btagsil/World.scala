@@ -31,6 +31,40 @@ private def performPurchase(world: World, thing: String, sellerName: String): St
     world.player.weapon = thingSold
     Text.boughtThingFromSeller(sellerObject.name.capitalize, thing)
 
+private def objectHasProp(world: World, entity: String, prop: String): Boolean =
+        getCurrentLoc(world).objects(entity).properties.contains(prop)
+
+private def performMutualSmacking(player: Player, monster: Entity, playerNewHP: Integer, monsterNewHP: Integer): String =
+    player.hp = playerNewHP
+    monster.behavior("hp") = monsterNewHP
+    Text.mutuallySmacked(monster.name, monster.behavior("swing").asInstanceOf[String], player.weapon.swing, playerNewHP, monsterNewHP)
+
+private def youWin(player: Player, monster: Entity, playerNewHP: Integer, monsterNewHP: Integer): String =
+    performMutualSmacking(player, monster, playerNewHP, monsterNewHP) +
+    Text.youWon(monster.name)
+
+private def youAreDed(monster: Entity): Unit =
+    println(Text.youAreDed(monster.name, monster.behavior("swing").asInstanceOf[String]) + ".\n\n")
+    System.exit(0)
+
+private def checkWhoDiesAndSmack(world: World, entityName: String): String =
+    var monster = getCurrentLoc(world).objects(entityName)
+    val monsterHP = monster.behavior("hp").asInstanceOf[Integer]
+    val playerNewHP = world.player.hp - monster.behavior("damage").asInstanceOf[Integer]
+    val monsterNewHP = monsterHP - world.player.weapon.damage
+
+    val alreadyDead = monsterHP <= 0
+    val playerDies = playerNewHP <= 0
+    val monsterDies = monsterNewHP <= 0
+
+    Array(alreadyDead, playerDies, monsterDies) match {
+        case Array(true, _, _) => Text.stopItsAlreadyDead(monster.name)
+        case Array(false, false, false) => performMutualSmacking(world.player, monster, playerNewHP, monsterNewHP)
+        case Array(false, false, true) => youWin(world.player, monster, playerNewHP, monsterNewHP)
+        case Array(false, true, _) => youAreDed(monster).toString()
+        case _ => throw Exception("checkWhoDiesAndSmack(): UNREACHABLE: the state of player/monster dying is unclear, debug further from here.")
+    }
+
 object Change:
     def go_to_loc(world: World, where: String): String =
         val currentLoc = getCurrentLoc(world)
@@ -60,6 +94,19 @@ object Change:
             case _ => performPurchase(world, thing, sellerName)
         }
 
+    def smack(world: World, target: List[String]): String =
+        val entityName = target mkString " "
+        val currentLoc = getCurrentLoc(world)
+        val targetExistsOnLoc = currentLoc.objects.contains(entityName)
+        val targetFights = if targetExistsOnLoc then objectHasProp(world, entityName, "fights") else false
+
+        Array(targetExistsOnLoc, targetFights) match {
+            case Array(false, false) => Text.noSuchTargetToSmack(entityName)
+            case Array(true, false) => Text.badIdeaToSmack(entityName)
+            case Array(true, true) => checkWhoDiesAndSmack(world, entityName)
+            case Array(false, true) => throw Exception("Change.smack(): UNREACHABLE: Target doesn't exist but can fight?!")
+        }
+
 object Info:
     def currentLocDescription(world: World): String =
         val currentLoc = getCurrentLoc(world)
@@ -80,9 +127,6 @@ object Info:
         val entityExists = currentLoc.objects.contains(entityName)
         val entity = if entityExists then Some(currentLoc.objects(entityName)) else None
         if entityExists then Text.youSeeEntity(entity.get.name, entity.get.description) else Text.noObjectToLookAt(entityName)
-
-    def objectHasProp(world: World, entity: String, prop: String): Boolean =
-        getCurrentLoc(world).objects(entity).properties.contains(prop)
 
     def chooseEntityAndTalk(world: World, entityName: String): String =
         val theEntity = getCurrentLoc(world).objects(entityName)

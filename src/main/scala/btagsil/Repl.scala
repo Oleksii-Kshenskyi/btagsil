@@ -52,6 +52,11 @@ def actBuy(world: World, what: List[String]): String = what match {
     case _ => Text.needToBuyFromSomeone()
 }
 
+def actAttack(world: World, target: List[String]): String = target match {
+    case List() => Text.smackWho()
+    case entity => Change.smack(world, entity)
+}
+
 
 // REPL's system actions
 
@@ -79,6 +84,7 @@ def replOnce(world: World, action: List[String]): Unit = action match {
     case "talk" :: target => replRespond(actTalk(world, target))
     case "go" :: how => replRespond(actGo(world, how))
     case "buy" :: what => replRespond(actBuy(world, what))
+    case "attack" :: target => replRespond(actAttack(world, target))
     case "echo" :: what => replEcho(what)
 
     case wtf => replUnknown(wtf)

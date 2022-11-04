@@ -21,22 +21,32 @@ def guardsPandorasBox(): Array[String] = Array(
 trait Weapon:
     val name: String
     val description: String
+    val damage: Integer
+    val swing: String
 
 class Fists() extends Weapon:
     val name: String = "fists"
     val description: String = "just your bare fists"
+    val damage: Integer = 5
+    val swing: String = "punch clumsily with your fist"
 
 class Axe() extends Weapon:
     val name: String = "axe"
     val description: String = "a humongous razor-sharp double-headed greataxe"
+    val damage: Integer = 50
+    val swing: String = "perform a wide cleave with your gigantic axe"
 
 class Sword() extends Weapon:
     val name: String = "sword"
     val description: String = "a gorgeous long ornamented claymore"
+    val damage: Integer = 40
+    val swing: String = "perform a skillful overhead slash with your claymore"
 
 class Bow() extends Weapon:
     val name: String = "bow"
     val description: String = "a gigantic greatbow that uses spears as arrows"
+    val damage: Integer = 30
+    val swing: String = "ready your humongous bow and fire one of your arrow-spears with a heavy thunk"
 
 class Player():
     var currentLocation: String = "forest"
@@ -135,6 +145,14 @@ object Text:
 
     def boughtThingFromSeller(sellerName: String, thing: String): String = sellerName + " says: 'Thanks for buying the " + thing + "!'"
 
+    def smackWho(): String = "Who/whaddaya wanna smack?"
+
+    def mutuallySmacked(monsterName: String, monsterSwing: String, playerSwing: String, playerNewHP: Integer, monsterNewHP: Integer): String =
+        "The " + monsterName + " " + monsterSwing + ". You have " + playerNewHP + " HP now.\nYou " + playerSwing + ". The monster has " + monsterNewHP + " HP now."
+
+    def youWon(monsterName: String): String = "\nThe " + monsterName + " breathes the final time and collapses in the pool of its blood.\n" +
+                                              "Congrats! Here's your medal. No clue what you're gonna do with it though"
+
     // Where errors
 
     def whereWhat(): String = "Where... what?"
@@ -195,6 +213,9 @@ object Text:
     def sourceAndDestNotConnected(where: String, from: String): String =
         "You can't go from " + from + " to " + where + ", they're not connected.\nTry 'where can i go' to see where you can go from here."
 
+    def youAreDed(monsterName: String, monsterSwing: String): String =
+        "The " + monsterName + " " + monsterSwing + ".\nThe blow turns out to be fatal.\nYou die from your wounds.."
+
     // Buy errors
 
     def buyWhat(): String = "Buy... what?"
@@ -208,3 +229,11 @@ object Text:
     def sellerDoesntSell(sellerName: String): String = "The " + sellerName + " doesn't seem interested in selling you stuff."
 
     def sellerDoesntSellThing(sellerName: String, thing: String): String = "The " + sellerName + " doesn't have any " + thing + "s to sell you."
+
+    // Attack errors
+
+    def noSuchTargetToSmack(entityName: String): String = "You don't see any " + entityName + "s around that you could smack."
+
+    def badIdeaToSmack(entityName: String): String = "You consider smacking the " + entityName + " for a sec there.\nThen you admit it was a bad idea and reconsider."
+
+    def stopItsAlreadyDead(monsterName: String): String = "Stop it, the " + monsterName + " is already dead!"
