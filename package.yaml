@@ -19,7 +19,7 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/Oleksii-Kshenskyi/btagsil/>
 
 dependencies:
-- base >= 4.17 && < 5
+- base >= 4.16 && < 5
 - text >= 1.2.5.0
 
 ghc-options:

@@ -1,11 +1,19 @@
 module Actions (
     execute,
     exitMessage,
-    ControlFlow (..)
+    ControlFlow (..),
+    Action (..)
 ) where
 
-import Parse
+--import Parse
 import qualified Data.Text as T
+
+data Action =
+    Exit
+    | Empty
+    | Echo T.Text
+    | Unknown T.Text
+    deriving (Show)
 
 data ControlFlow = EmptyResponse
                  | TextResponse T.Text
