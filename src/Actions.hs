@@ -1,35 +1,23 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Actions (
-    execute,
     exitMessage,
-    ControlFlow (..),
+    unknownMessage,
     Action (..)
 ) where
 
---import Parse
-import qualified Data.Text as T
+import Data.Text
 
 data Action =
     Exit
     | Empty
-    | Echo T.Text
-    | Unknown T.Text
+    | Echo Text
+    | Unknown Text
     deriving (Show)
 
-data ControlFlow = EmptyResponse
-                 | TextResponse T.Text
-                 | ExitGame T.Text
 
+exitMessage :: Text
+exitMessage = "Thanks for playing!"
 
-exitMessage :: T.Text
-exitMessage = T.pack "Thanks for playing!"
-
-unknownMessage :: T.Text -> T.Text
-unknownMessage what = T.pack $ "I'm sorry, I don't know what '" ++ T.unpack what ++ "' is."
-
-execute :: Action -> ControlFlow
-execute action =
-    case action of
-        Echo echoed -> TextResponse echoed
-        Unknown what -> TextResponse $ unknownMessage what
-        Exit -> ExitGame exitMessage
-        Empty -> EmptyResponse
+unknownMessage :: Text -> Text
+unknownMessage what = "I'm sorry, I don't know what '" <> what <> "' is."
