@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- Data structures
+
 module GameData (
     module GameData,
 ) where
@@ -50,6 +52,14 @@ initWorld = World {
     player = initPlayer,
     locations = M.fromList [("forest", initForest)]
 }
+
+-- System messages
+
+exitMessage :: Text
+exitMessage = "Thanks for playing!"
+
+unknownMessage :: Text -> Text
+unknownMessage what = "I'm sorry, I don't know what '" <> what <> "' is."
 
 -- Navigational messages
 
