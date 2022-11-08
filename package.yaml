@@ -22,6 +22,7 @@ dependencies:
 - base >= 4.16 && < 5
 - text >= 1.2.5.0
 - containers >= 0.6 && < 0.7
+- lens >= 5.1 && < 5.2
 
 ghc-options:
 - -Wall

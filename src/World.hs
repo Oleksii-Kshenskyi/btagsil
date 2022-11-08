@@ -13,16 +13,18 @@ import Data.Text()
 import Data.Map as M
 import Prelude as P
 import Data.Text as T
+import Control.Lens
+import Control.Arrow ((>>>))
 
 describeLoc :: Location -> Text
-describeLoc loc = GD.describeLoc (lname loc) (ldescription loc)
+describeLoc loc = GD.describeLoc (loc ^.to lname) (loc ^.to ldescription)
 
 getCurLoc :: World -> Location
-getCurLoc world = case M.lookup curLocName locs of
+getCurLoc world = case locs ^.at curLocName  of
                       Nothing -> error "getCurLoc: UNREACHABLE: Current location doesn't exist?!"
                       Just loc -> loc
-    where curLocName = currentLocation $ player world
-          locs = locations world
+    where curLocName = world ^.to (player >>> currentLocation)
+          locs = world ^.to locations
 
 articledEnumeration :: [Text] -> Text -> Text
 articledEnumeration locs article = T.intercalate ", " $ P.map (\s -> article <> " " <> s) locs
@@ -36,7 +38,7 @@ whereAmI world = describeLoc curLoc
 possibleDestinations :: World -> Text
 possibleDestinations world = GD.youCanGoTo destinations
     where curLoc = getCurLoc world
-          connLocs = connected curLoc
+          connLocs = curLoc ^.to connected
           destinations = articledEnumeration connLocs "the"
 
 -- Initializing the world

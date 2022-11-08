@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 -- Data structures
 
@@ -8,27 +9,37 @@ module GameData (
 
 import qualified Data.Map as M
 import Data.Text (Text)
+import Control.Lens (makeLenses)
+import Control.Lens.TH ( makeFields)
 
 data Weapon = Weapon {
     wname :: Text,
     wdescription :: Text
-}
+} deriving (Show)
+$(makeLenses ''Weapon)
+$(makeFields ''Weapon)
 
 data Player = Player {
     currentLocation :: Text,
     weapon :: Weapon
-}
+} deriving (Show)
+$(makeLenses ''Player)
+$(makeFields ''Player)
 
 data Location = Location {
     lname :: Text,
     ldescription :: Text,
     connected :: [Text]
-}
+} deriving (Show)
+$(makeLenses ''Location)
+$(makeFields ''Location)
 
 data World = World {
     player :: Player,
     locations :: M.Map Text Location 
-}
+} deriving (Show)
+$(makeLenses ''World)
+$(makeFields ''World)
 
 initFists :: Weapon
 initFists = Weapon {

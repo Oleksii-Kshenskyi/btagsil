@@ -9,7 +9,7 @@ import Data.Text.IO as TI
 import qualified System.IO as SI
 import qualified System.Exit as E
 
-import Repl
+import Repl ( chooseAction, Action(..) )
 import GameData (World)
 import qualified GameData as GD
 
