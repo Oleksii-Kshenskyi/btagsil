@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Lib
-import GameData(initWorld)
+import World(initWorld)
 
 main :: IO ()
 main = run initWorld

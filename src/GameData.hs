@@ -21,7 +21,8 @@ data Player = Player {
 
 data Location = Location {
     lname :: Text,
-    ldescription :: Text
+    ldescription :: Text,
+    connected :: [Text]
 }
 
 data World = World {
@@ -44,13 +45,15 @@ initPlayer = Player {
 initForest :: Location
 initForest = Location {
     lname = "forest",
-    ldescription = "a beautiful rainforest.\nThere's a fresh smell of nature after rain in the air.\nSunshine is filtering through the tall trees, creating a beautiful and peaceful feeling inside"
+    ldescription = "a beautiful rainforest.\nThere's a fresh smell of nature after rain in the air.\nSunshine is filtering through the tall trees, creating a beautiful and peaceful feeling inside",
+    connected = ["square"]
 }
 
-initWorld :: World
-initWorld = World {
-    player = initPlayer,
-    locations = M.fromList [("forest", initForest)]
+initSquare :: Location
+initSquare = Location {
+    lname = "square",
+    ldescription = "a gigantic square full of people.\nYou suddenly long for some adventure!",
+    connected = ["forest"]
 }
 
 -- System messages
@@ -65,6 +68,9 @@ unknownMessage what = "I'm sorry, I don't know what '" <> what <> "' is."
 
 describeLoc :: Text -> Text -> Text
 describeLoc locName locDescr = "You're in the " <> locName <> ".\nIt's " <> locDescr <> "."
+
+youCanGoTo :: Text -> Text
+youCanGoTo these = "You can go to " <> these <> " from here."
 
 -- Error messages
 

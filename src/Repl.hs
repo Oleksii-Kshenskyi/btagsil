@@ -30,6 +30,7 @@ performWhere world what = case what of
                             ["is"] -> (world, Echo GD.whereIsWhat)
                             "is" : obj -> (world, Echo $ GD.noClueWhereIsObject $ T.unwords obj)
                             ["am", "i"] -> (world, Echo $ W.whereAmI world)
+                            ["can", "i", "go"] -> (world, Echo $ W.possibleDestinations world)
                             _ -> (world, Echo GD.wrongWhere)
 
 chooseAction :: World -> IO Text -> IO (World, Action)
