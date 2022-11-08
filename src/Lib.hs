@@ -11,11 +11,13 @@ import qualified System.Exit as E
 
 import Repl
 import GameData (World)
+import qualified GameData as GD
 
-act :: ControlFlow -> IO ()
-act EmptyResponse = TI.putStr ""
-act (ExitGame message) = TI.putStrLn (message <> "\n") >> E.exitSuccess
-act (TextResponse response) = TI.putStrLn (response <> "\n")
+act :: Action -> IO ()
+act Empty = TI.putStr ""
+act (Exit message) = TI.putStrLn (message <> "\n") >> E.exitSuccess
+act (Echo response) = TI.putStrLn (response <> "\n")
+act (Unknown thing) = TI.putStrLn $ GD.unknownMessage thing <> "\n"
 
 readOnce :: IO Text
 readOnce = TI.putStr ">> " *> SI.hFlush SI.stdout *> TI.getLine
@@ -23,4 +25,4 @@ readOnce = TI.putStr ">> " *> SI.hFlush SI.stdout *> TI.getLine
 run :: World -> IO ()
 run world = do
     (newWorld, newAction) <- chooseAction world readOnce
-    act (instructRepl newAction) *> run newWorld
+    act newAction *> run newWorld

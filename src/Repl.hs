@@ -2,7 +2,6 @@
 
 module Repl (
     chooseAction,
-    instructRepl,
     Action (..),
     ControlFlow (..)
 ) where
@@ -19,7 +18,7 @@ data ControlFlow = EmptyResponse
                  | ExitGame Text
 
 data Action =
-    Exit
+    Exit Text
     | Empty
     | Echo Text
     | Unknown Text
@@ -33,20 +32,12 @@ performWhere world what = case what of
                             ["am", "i"] -> (world, Echo $ W.whereAmI world)
                             _ -> (world, Echo GD.wrongWhere)
 
-instructRepl :: Action -> ControlFlow
-instructRepl action =
-    case action of
-        Echo echoed -> TextResponse echoed
-        Unknown what -> TextResponse $ GD.unknownMessage what
-        Exit -> ExitGame GD.exitMessage
-        Empty -> EmptyResponse
-
 chooseAction :: World -> IO Text -> IO (World, Action)
 chooseAction world inputIOed = do
     textPls <- inputIOed
     return $ case T.words textPls of 
                 [] -> (world, Empty)
-                ["exit"] -> (world, Exit)
+                ["exit"] -> (world, Exit GD.exitMessage)
                 "echo" : arg -> (world, Echo (T.unwords arg))
                 "where" : what -> performWhere world what
                 _ -> (world, Unknown textPls)
