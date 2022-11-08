@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/Olek
 dependencies:
 - base >= 4.16 && < 5
 - text >= 1.2.5.0
+- containers >= 0.6 && < 0.7
 
 ghc-options:
 - -Wall
