@@ -2,27 +2,15 @@
 
 module Repl (
     chooseAction,
-    Action (..),
-    ControlFlow (..)
+    Action (..)
 ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 
-import GameData (World (..))
+import GameData (World (..), Action (..))
 import qualified GameData as GD
 import qualified World as W
-
-data ControlFlow = EmptyResponse
-                 | TextResponse Text
-                 | ExitGame Text
-
-data Action =
-    Exit Text
-    | Empty
-    | Echo Text
-    | Unknown Text
-    deriving (Show)
 
 performWhere :: World -> [Text] -> (World, Action)
 performWhere world what = case what of
@@ -33,6 +21,13 @@ performWhere world what = case what of
                             ["can", "i", "go"] -> (world, Echo $ W.possibleDestinations world)
                             _ -> (world, Echo GD.wrongWhere)
 
+performGo :: World -> [Text] -> (World, Action)
+performGo world dest = case dest of
+                        [] -> (world, Echo GD.goWhere)
+                        ["to"] -> (world, Echo GD.goToWhere)
+                        "to" : place -> W.goTo world place
+                        _ -> (world, Echo GD.tryGoingToPlaces)
+
 chooseAction :: World -> IO Text -> IO (World, Action)
 chooseAction world inputIOed = do
     textPls <- inputIOed
@@ -41,4 +36,5 @@ chooseAction world inputIOed = do
                 ["exit"] -> (world, Exit GD.exitMessage)
                 "echo" : arg -> (world, Echo (T.unwords arg))
                 "where" : what -> performWhere world what
+                "go" : loc -> performGo world loc
                 _ -> (world, Unknown textPls)
