@@ -2,7 +2,7 @@
 
 module World (
     whereAmI, possibleDestinations, initWorld,
-    goTo
+    goTo, lookAround, lookAtObject
 ) where
 
 import qualified GameData as GD
@@ -47,6 +47,21 @@ possibleDestinations world = GD.youCanGoTo destinations
     where curLoc = getCurLoc world
           connLocs = curLoc ^. connected
           destinations = articledEnumeration connLocs "the"
+
+lookAround :: World -> Text
+lookAround world = case objNames of
+                       [] -> GD.nothingToSeeHere
+                       names -> GD.youSee $ articledEnumeration names "the"
+    where curLoc = getCurLoc world
+          objNames = P.map _oname $ M.elems $ curLoc ^. objects
+
+lookAtObject :: World -> [Text] -> Text
+lookAtObject world objNameList = case maybeObj of
+                                    Nothing -> GD.noObjAround objName
+                                    Just obj -> GD.youSeeObject (obj ^. oname) (obj ^. odescription)
+    where objName = T.unwords objNameList
+          curLoc = getCurLoc world
+          maybeObj = curLoc ^. objects . at objName
 
 -- The actions that mutate the world
 

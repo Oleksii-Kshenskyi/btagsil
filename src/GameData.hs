@@ -18,6 +18,12 @@ data Action =
     | Unknown Text
     deriving (Show)
 
+data BehaviorNode =
+    IntNode Int
+    | TextNode Text
+    | LinesNode [Text]
+    deriving (Show)
+
 data Weapon = Weapon {
     _wname :: Text,
     _wdescription :: Text
@@ -30,10 +36,19 @@ data Player = Player {
 } deriving (Show)
 $(makeLenses ''Player)
 
+data Object = Object {
+    _oname :: Text,
+    _odescription :: Text,
+    _properties :: [Text],
+    _behavior :: M.Map Text BehaviorNode
+} deriving (Show)
+$(makeLenses ''Object)
+
 data Location = Location {
     _lname :: Text,
     _ldescription :: Text,
-    _connected :: [Text]
+    _connected :: [Text],
+    _objects :: M.Map Text Object
 } deriving (Show)
 $(makeLenses ''Location)
 
@@ -56,18 +71,28 @@ initPlayer = Player {
     _weapon = initFists
 }
 
+initGuard :: Object 
+initGuard = Object {
+    _oname = "guard",
+    _odescription = "a big burly man in heavy armor wielding a halberd.\nHe seems friendly and doesn't seem to mind chatting with people who visit the square.",
+    _properties = ["talks"],
+    _behavior = M.empty
+}
+
 initForest :: Location
 initForest = Location {
     _lname = "forest",
     _ldescription = "a beautiful rainforest.\nThere's a fresh smell of nature after rain in the air.\nSunshine is filtering through the tall trees, creating a beautiful and peaceful feeling inside",
-    _connected = ["square"]
+    _connected = ["square"],
+    _objects = M.empty
 }
 
 initSquare :: Location
 initSquare = Location {
     _lname = "square",
     _ldescription = "a gigantic square full of people.\nYou suddenly long for some adventure!",
-    _connected = ["forest"]
+    _connected = ["forest"],
+    _objects = M.fromList [("guard", initGuard)]
 }
 
 -- System messages
@@ -86,6 +111,12 @@ describeLoc locName locDescr = "You're in the " <> locName <> ".\nIt's " <> locD
 youCanGoTo :: Text -> Text
 youCanGoTo these = "You can go to " <> these <> " from here."
 
+youSee :: Text -> Text
+youSee stuff = "You see " <> stuff <> " here."
+
+youSeeObject :: Text -> Text -> Text
+youSeeObject name descr = "You see the " <> name <> ". It's " <> descr <> "."
+
 -- Error messages
 
 -- Where errors
@@ -101,6 +132,23 @@ noClueWhereIsObject obj = "No clue where '" <> obj <> "' is ¯\\_(ツ)_/¯"
 
 wrongWhere :: Text
 wrongWhere = "Where... ugh... What do you mean?\nMaybe you meant 'where is <object>' or 'where can i go'\nOr maybe 'where am i'?"
+
+-- Look errors
+
+wrongLook :: Text
+wrongLook = "I see. You want to look. But how and where?\nMaybe try 'look at <object>' or 'look around'?"
+
+lookWhere :: Text
+lookWhere = "Look... where?\nMaybe try 'look at <object>' or 'look around'"
+
+lookAtWhat :: Text
+lookAtWhat = "Look at... What?"
+
+nothingToSeeHere :: Text
+nothingToSeeHere = "You don't see anything of importance around here."
+
+noObjAround :: Text -> Text
+noObjAround objName = "You don't see any " <> objName <> "s around here."
 
 -- Go errors
 
