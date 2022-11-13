@@ -31,6 +31,13 @@ performWhere world what = case what of
                             ["can", "i", "go"] -> (world, Echo $ W.possibleDestinations world)
                             _ -> (world, Echo GD.wrongWhere)
 
+performTalk :: World -> [Text] -> (World, Action)
+performTalk world obj = case obj of
+                            [] -> (world, Echo GD.okImTalking)
+                            ["to"] -> (world, Echo GD.talkToWho)
+                            "to" : target -> (world, Echo $ W.talkToObject world target)
+                            _ -> (world, Echo GD.wrongTalk)
+
 -- Actions that mutate the world
 
 performGo :: World -> [Text] -> (World, Action)
@@ -52,4 +59,5 @@ chooseAction world inputIOed = do
                 "where" : what -> performWhere world what
                 "look" : direction -> performLook world direction
                 "go" : loc -> performGo world loc
+                "talk" : obj -> performTalk world obj
                 _ -> (world, Unknown textPls)

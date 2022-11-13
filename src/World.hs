@@ -2,7 +2,7 @@
 
 module World (
     whereAmI, possibleDestinations, initWorld,
-    goTo, lookAround, lookAtObject
+    goTo, lookAround, lookAtObject, talkToObject
 ) where
 
 import qualified GameData as GD
@@ -14,7 +14,7 @@ import Prelude as P
 import Data.Text as T
 import Control.Lens
 
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, fromJust)
 
 describeLoc :: Location -> Text
 describeLoc loc = GD.describeLoc (loc ^. lname) (loc ^. ldescription)
@@ -33,6 +33,21 @@ moveBetweenLocs :: World -> Text -> (World, Action)
 moveBetweenLocs world place = (newWorld, Echo response)
     where newWorld = world & player . currentLocation .~ place
           response = GD.youWentTo place
+
+takeFromPandorasBox :: [Text] -> Text
+takeFromPandorasBox theBox = ""
+
+talkToGuard :: Object -> Text
+talkToGuard guard = GD.entitySays guardName pandoraSays
+    where guardName = guard ^. oname
+          pandoraSays = takeFromPandorasBox $ guard ^. behavior . at "pandora's box"
+          
+
+executeTalk :: World -> Text -> Text
+executeTalk world objName = case objName of
+                                "guard" -> talkToGuard $ fromJust theObj
+                                wtf -> error "World: executeTalk: ERROR: don't know how to talk to " <> wtf <> "."
+    where theObj = getCurLoc world ^. objects . at objName
 
 -- Exported (public) functionality used by Repl.hs
 
@@ -62,6 +77,17 @@ lookAtObject world objNameList = case maybeObj of
     where objName = T.unwords objNameList
           curLoc = getCurLoc world
           maybeObj = curLoc ^. objects . at objName
+
+talkToObject :: World -> [Text] -> Text
+talkToObject world objNameList = case [objExists, objTalks] of
+                                      [True, True] -> executeTalk world objName
+                                      [True, False] -> GD.objDoesntTalk objName
+                                      [False, False] -> GD.noObjToTalkTo objName
+                                      [False, True] -> error "World: talkToObject: UNREACHABLE: Object talks but doesn't exist?!"
+    where objName = T.unwords objNameList
+          maybeObj = getCurLoc world ^. objects . at objName
+          objExists = isJust maybeObj
+          objTalks = objExists && "talks" `P.elem` (fromJust maybeObj ^. properties)
 
 -- The actions that mutate the world
 

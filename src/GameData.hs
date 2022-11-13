@@ -71,12 +71,29 @@ initPlayer = Player {
     _weapon = initFists
 }
 
+initGuardBox :: [Text]
+initGuardBox = [
+        "How's your day going today, Your Highness?",
+        "Did you know that dragons can fly?",
+        "I've been thinking about the purpose of my life a lot recently... Why am I here?",
+        "I want to kiss a girl so much...",
+        "I'm a bit under the weather today, apologies.",
+        "You look lovely today, Your Highness!",
+        "WOW! The hat REALLY suits you! So stylish!",
+        "It's important to remember to brush your teeth every morning.",
+        "A bottle of fine ale would hit the spot right about now...",
+        "It's impressive how quickly these tourists litter the square. Ugh.",
+        "Did you know there's a fine weapon shop just nearby? Try going there!",
+        "Are you tired?",
+        "I remember that time I was a wee little lad..."
+    ]
+
 initGuard :: Object 
 initGuard = Object {
     _oname = "guard",
     _odescription = "a big burly man in heavy armor wielding a halberd.\nHe seems friendly and doesn't seem to mind chatting with people who visit the square.",
     _properties = ["talks"],
-    _behavior = M.empty
+    _behavior = M.fromList [("pandora's box", LinesNode initGuardBox)]
 }
 
 initForest :: Location
@@ -117,6 +134,9 @@ youSee stuff = "You see " <> stuff <> " here."
 youSeeObject :: Text -> Text -> Text
 youSeeObject name descr = "You see the " <> name <> ". It's " <> descr <> "."
 
+entitySays :: Text -> Text -> Text
+entitySays entityName says = "The " <> entityName <> " says: '" <> says <> "'"
+
 -- Error messages
 
 -- Where errors
@@ -149,6 +169,24 @@ nothingToSeeHere = "You don't see anything of importance around here."
 
 noObjAround :: Text -> Text
 noObjAround objName = "You don't see any " <> objName <> "s around here."
+
+-- Talk errors
+
+okImTalking :: Text
+okImTalking = "Talk? OK, I'm talking. And?\nMaybe try 'talk to <object>'?\nTry 'look around' to see who you can talk to."
+
+talkToWho :: Text
+talkToWho = "Talk to... Who?"
+
+wrongTalk :: Text
+wrongTalk = "Umm... Talk?.. How? What?!\nMaybe try 'talk to <object>'?"
+
+
+objDoesntTalk :: Text -> Text
+objDoesntTalk objName = "The " <> objName <> " doesn't seem too interested in talking to you."
+
+noObjToTalkTo :: Text -> Text
+noObjToTalkTo objName = "You don't see any " <> objName <> "s to talk to."
 
 -- Go errors
 
