@@ -53,7 +53,8 @@ talkToGuard guard randInt = GD.entitySays guardName pandoraSays
 executeTalk :: World -> Text -> Int -> Text
 executeTalk world objName randInt = case objName of
                                         "guard" -> talkToGuard (fromJust theObj) randInt
-                                        wtf -> error "World: executeTalk: ERROR: don't know how to talk to " <> wtf <> "."
+                                        "shopkeeper" -> GD.entitySays objName GD.shopkeeperLine
+                                        wtf -> error ("World: executeTalk: ERROR: don't know how to talk to " <> T.unpack wtf <> ".")
     where theObj = getCurLoc world ^. objects . at objName
 
 -- Exported (public) functionality used by Repl.hs

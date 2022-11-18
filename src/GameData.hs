@@ -173,6 +173,9 @@ youSeeObject name descr = "You see the " <> name <> ". It's " <> descr <> "."
 youSeeWeapon :: Text -> Text
 youSeeWeapon weaponDescr = "You see " <> weaponDescr <> "."
 
+shopkeeperLine :: Text
+shopkeeperLine = "Stop talking and buy something already, you flirtatious vagabond!"
+
 entitySays :: Text -> Text -> Text
 entitySays entityName says = "The " <> entityName <> " says: '" <> says <> "'"
 
