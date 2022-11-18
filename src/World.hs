@@ -2,7 +2,8 @@
 
 module World (
     whereAmI, possibleDestinations, initWorld,
-    goTo, lookAround, lookAtObject, talkToObject
+    goTo, lookAround, lookAtObject, lookAtYourWeapon,
+    talkToObject
 ) where
 
 import qualified GameData as GD
@@ -76,6 +77,10 @@ lookAround world = case objNames of
     where curLoc = getCurLoc world
           objNames = P.map _oname $ M.elems $ curLoc ^. objects
 
+lookAtYourWeapon :: World -> Text
+lookAtYourWeapon world = GD.youSeeWeapon weaponDescr
+    where weaponDescr = world ^. player . weapon . wdescription
+
 lookAtObject :: World -> [Text] -> Text
 lookAtObject world objNameList = case maybeObj of
                                     Nothing -> GD.noObjAround objName
@@ -117,6 +122,7 @@ initWorld = World {
     _player = initPlayer,
     _locations = M.fromList [
         ("forest", initForest),
-        ("square", initSquare)
+        ("square", initSquare),
+        ("weapon shop", initWeaponShop)
     ]
 }

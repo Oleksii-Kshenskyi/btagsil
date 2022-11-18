@@ -18,17 +18,18 @@ data Action =
     | Unknown Text
     deriving (Show)
 
-data BehaviorNode =
-    IntNode Int
-    | TextNode Text
-    | LinesNode [Text]
-    deriving (Show)
-
 data Weapon = Weapon {
     _wname :: Text,
     _wdescription :: Text
 } deriving (Show)
 $(makeLenses ''Weapon)
+
+data BehaviorNode =
+    IntNode Int
+    | TextNode Text
+    | LinesNode [Text]
+    | WeaponsNode (M.Map Text Weapon)
+    deriving (Show)
 
 data Player = Player {
     _currentLocation :: Text,
@@ -58,11 +59,28 @@ data World = World {
 } deriving (Show)
 $(makeLenses ''World)
 
-
 initFists :: Weapon
 initFists = Weapon {
     _wname = "fists",
     _wdescription = "just your bare fists"
+}
+
+initAxe :: Weapon
+initAxe = Weapon {
+    _wname = "axe",
+    _wdescription = "a humongous razor-sharp double-headed greataxe"
+}
+
+initSword :: Weapon
+initSword = Weapon {
+    _wname = "sword",
+    _wdescription = "a gorgeous long ornamented claymore"
+}
+
+initBow :: Weapon
+initBow = Weapon {
+    _wname = "bow",
+    _wdescription = "a gigantic greatbow that uses spears as arrows"
 }
 
 initPlayer :: Player
@@ -96,6 +114,16 @@ initGuard = Object {
     _behavior = M.fromList [("pandora's box", LinesNode initGuardBox)]
 }
 
+initShopkeeper :: Object
+initShopkeeper = Object {
+    _oname = "shopkeeper",
+    _odescription = "an old man with an eye for trade.\nHe's throwing glances at you hoping you'll buy something from him",
+    _properties = ["talks", "sells"],
+    _behavior = M.fromList [("sells", WeaponsNode (M.fromList [("axe", initAxe),
+                                                               ("sword", initSword),
+                                                               ("bow", initBow)]))]
+}
+
 initForest :: Location
 initForest = Location {
     _lname = "forest",
@@ -108,8 +136,16 @@ initSquare :: Location
 initSquare = Location {
     _lname = "square",
     _ldescription = "a gigantic square full of people.\nYou suddenly long for some adventure!",
-    _connected = ["forest"],
+    _connected = ["forest", "weapon shop"],
     _objects = M.fromList [("guard", initGuard)]
+}
+
+initWeaponShop :: Location
+initWeaponShop = Location {
+    _lname = "weapon shop",
+    _ldescription = "crammed with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye.",
+    _connected = ["square"],
+    _objects = M.fromList [("shopkeeper", initShopkeeper)]
 }
 
 -- System messages
@@ -133,6 +169,9 @@ youSee stuff = "You see " <> stuff <> " here."
 
 youSeeObject :: Text -> Text -> Text
 youSeeObject name descr = "You see the " <> name <> ". It's " <> descr <> "."
+
+youSeeWeapon :: Text -> Text
+youSeeWeapon weaponDescr = "You see " <> weaponDescr <> "."
 
 entitySays :: Text -> Text -> Text
 entitySays entityName says = "The " <> entityName <> " says: '" <> says <> "'"

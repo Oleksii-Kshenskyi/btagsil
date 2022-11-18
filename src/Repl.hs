@@ -19,6 +19,7 @@ performLook :: World -> [Text] -> (World, Action)
 performLook world direction = case direction of
                                 [] -> (world, Echo GD.lookWhere)
                                 ["at"] -> (world, Echo GD.lookAtWhat)
+                                ["at", "my", "weapon"] -> (world, Echo $ W.lookAtYourWeapon world)
                                 "at" : obj -> (world, Echo $ W.lookAtObject world obj)
                                 ["around"] -> (world, Echo $ W.lookAround world)
                                 _ -> (world, Echo GD.wrongLook)
