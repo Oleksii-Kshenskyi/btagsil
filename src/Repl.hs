@@ -6,6 +6,7 @@ module Repl (
 ) where
 
 import Data.Text (Text)
+import System.Random (randomRIO)
 import qualified Data.Text as T
 
 import GameData (World (..), Action (..))
@@ -31,12 +32,12 @@ performWhere world what = case what of
                             ["can", "i", "go"] -> (world, Echo $ W.possibleDestinations world)
                             _ -> (world, Echo GD.wrongWhere)
 
-performTalk :: World -> [Text] -> (World, Action)
-performTalk world obj = case obj of
-                            [] -> (world, Echo GD.okImTalking)
-                            ["to"] -> (world, Echo GD.talkToWho)
-                            "to" : target -> (world, Echo $ W.talkToObject world target)
-                            _ -> (world, Echo GD.wrongTalk)
+performTalk :: World -> [Text] -> Int -> (World, Action)
+performTalk world obj randInt = case obj of
+                                    [] -> (world, Echo GD.okImTalking)
+                                    ["to"] -> (world, Echo GD.talkToWho)
+                                    "to" : target -> (world, Echo $ W.talkToObject world target randInt)
+                                    _ -> (world, Echo GD.wrongTalk)
 
 -- Actions that mutate the world
 
@@ -52,6 +53,7 @@ performGo world dest = case dest of
 chooseAction :: World -> IO Text -> IO (World, Action)
 chooseAction world inputIOed = do
     textPls <- inputIOed
+    numForGuard <- randomRIO (0 :: Int, 10000)
     return $ case T.words textPls of 
                 [] -> (world, Empty)
                 ["exit"] -> (world, Exit GD.exitMessage)
@@ -59,5 +61,5 @@ chooseAction world inputIOed = do
                 "where" : what -> performWhere world what
                 "look" : direction -> performLook world direction
                 "go" : loc -> performGo world loc
-                "talk" : obj -> performTalk world obj
+                "talk" : obj -> performTalk world obj numForGuard
                 _ -> (world, Unknown textPls)

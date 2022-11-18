@@ -34,19 +34,25 @@ moveBetweenLocs world place = (newWorld, Echo response)
     where newWorld = world & player . currentLocation .~ place
           response = GD.youWentTo place
 
-takeFromPandorasBox :: [Text] -> Text
-takeFromPandorasBox theBox = ""
+takeFromPandorasBox :: [Text] -> Int -> Text
+takeFromPandorasBox theBox randInt = theBox ^. ix randomIndex
+    where randomIndex = randInt `mod` P.length theBox
 
-talkToGuard :: Object -> Text
-talkToGuard guard = GD.entitySays guardName pandoraSays
+talkToGuard :: Object -> Int -> Text
+talkToGuard guard randInt = GD.entitySays guardName pandoraSays
     where guardName = guard ^. oname
-          pandoraSays = takeFromPandorasBox $ guard ^. behavior . at "pandora's box"
+          mBehaviorNode = guard ^. behavior . at "pandora's box"
+          pandoraSays = case mBehaviorNode of
+                            Nothing -> error "World: talkToGuard: guard's pandora's box node is a Nothing!"
+                            Just node -> case node of
+                                            LinesNode lns -> takeFromPandorasBox lns randInt
+                                            _ -> error "World: talkToGuard: pandora's box is not a LinesNode!"
           
 
-executeTalk :: World -> Text -> Text
-executeTalk world objName = case objName of
-                                "guard" -> talkToGuard $ fromJust theObj
-                                wtf -> error "World: executeTalk: ERROR: don't know how to talk to " <> wtf <> "."
+executeTalk :: World -> Text -> Int -> Text
+executeTalk world objName randInt = case objName of
+                                        "guard" -> talkToGuard (fromJust theObj) randInt
+                                        wtf -> error "World: executeTalk: ERROR: don't know how to talk to " <> wtf <> "."
     where theObj = getCurLoc world ^. objects . at objName
 
 -- Exported (public) functionality used by Repl.hs
@@ -78,12 +84,12 @@ lookAtObject world objNameList = case maybeObj of
           curLoc = getCurLoc world
           maybeObj = curLoc ^. objects . at objName
 
-talkToObject :: World -> [Text] -> Text
-talkToObject world objNameList = case [objExists, objTalks] of
-                                      [True, True] -> executeTalk world objName
-                                      [True, False] -> GD.objDoesntTalk objName
-                                      [False, False] -> GD.noObjToTalkTo objName
-                                      [False, True] -> error "World: talkToObject: UNREACHABLE: Object talks but doesn't exist?!"
+talkToObject :: World -> [Text] -> Int -> Text
+talkToObject world objNameList randInt = case [objExists, objTalks] of
+                                            [True, True] -> executeTalk world objName randInt
+                                            [True, False] -> GD.objDoesntTalk objName
+                                            [False, False] -> GD.noObjToTalkTo objName
+                                            [False, True] -> error "World: talkToObject: UNREACHABLE: Object talks but doesn't exist?!"
     where objName = T.unwords objNameList
           maybeObj = getCurLoc world ^. objects . at objName
           objExists = isJust maybeObj
