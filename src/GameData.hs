@@ -179,6 +179,9 @@ shopkeeperLine = "Stop talking and buy something already, you flirtatious vagabo
 entitySays :: Text -> Text -> Text
 entitySays entityName says = "The " <> entityName <> " says: '" <> says <> "'"
 
+thanksForBuying :: Text -> Text -> Text
+thanksForBuying sellerName thing = "The " <> sellerName <> " says: 'Thanks for buying the " <> thing <> "!"
+
 -- Error messages
 
 -- Where errors
@@ -252,3 +255,23 @@ alreadyThere place = "You cannot go to the " <> place <> ", you're already there
 
 youWentTo :: Text -> Text
 youWentTo place = "You went to " <> place <> "."
+
+-- Buy errors
+
+buyFromSomeone :: Text
+buyFromSomeone = "You can only buy things 'from' someone.\nTry 'buy <thing> from <seller>'."
+
+buyWhat :: Text
+buyWhat = "Buy what?\nTry 'buy <thing> from <seller>'."
+
+buyThingFromWho :: Text -> Text
+buyThingFromWho thing = "Buy " <> thing <> " from... who?"
+
+sellerDoesntExist :: Text -> Text
+sellerDoesntExist sellerName = "You don't see any " <> sellerName <> "s around that would be willing to sell you stuff."
+
+sellerDoesntSell :: Text -> Text
+sellerDoesntSell sellerName = "The " <> sellerName <> " does not seem interested in selling you stuff."
+
+sellerDoesntSellThing :: Text -> Text -> Text
+sellerDoesntSellThing sellerName thing = "The " <> sellerName <> " doesn't have any " <> thing <> "s to sell you."

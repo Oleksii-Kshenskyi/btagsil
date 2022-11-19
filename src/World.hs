@@ -3,7 +3,7 @@
 module World (
     whereAmI, possibleDestinations, initWorld,
     goTo, lookAround, lookAtObject, lookAtYourWeapon,
-    talkToObject
+    talkToObject, buyThingFromSeller
 ) where
 
 import qualified GameData as GD
@@ -56,6 +56,15 @@ executeTalk world objName randInt = case objName of
                                         "shopkeeper" -> GD.entitySays objName GD.shopkeeperLine
                                         wtf -> error ("World: executeTalk: ERROR: don't know how to talk to " <> T.unpack wtf <> ".")
     where theObj = getCurLoc world ^. objects . at objName
+
+sellThing :: World -> Text -> Text -> (World, Action)
+sellThing world thing sellerName = (newWorld, Echo $ GD.thanksForBuying sellerName thing)
+    where seller = fromJust $ getCurLoc world ^. objects . at sellerName
+          maybeWpMap = fromJust $ seller ^. behavior . at "sells"
+          wp = case maybeWpMap of
+                   WeaponsNode wpMap -> fromJust $ wpMap ^. at thing
+                   _ -> error "World: sellThing: sells behavior node is not a WeaponsNode?!"
+          newWorld = world & player . weapon .~ wp
 
 -- Exported (public) functionality used by Repl.hs
 
@@ -115,6 +124,25 @@ goTo world place = case [thereAlready, placeExists, placeIsConnected] of
           thereAlready = T.unwords place == curLocName
           placeExists = isJust $ world ^. locations . at placeTxt
           placeIsConnected = placeTxt `P.elem` (curLoc ^. connected)
+
+buyThingFromSeller :: World -> Text -> [Text] -> (World, Action)
+buyThingFromSeller world thing seller = case [sellerExists, sellerSells, sellerSellsThing] of
+                                             [False, _, _] -> (world, Echo $ GD.sellerDoesntExist sellerName)
+                                             [_, False, _] -> (world, Echo $ GD.sellerDoesntSell sellerName)
+                                             [_, _, False] -> (world, Echo $ GD.sellerDoesntSellThing sellerName thing)
+                                             _ -> sellThing world thing sellerName
+    where sellerName = T.unwords seller
+          maybeSeller = getCurLoc world ^. objects . at sellerName
+          sellerExists = isJust maybeSeller
+          sellerSells = sellerExists && "sells" `P.elem` fromJust maybeSeller ^. properties
+          weaponsNode = case maybeSeller of
+                            Nothing -> Nothing
+                            Just sObj -> sObj ^. behavior . at "sells"
+          sellerSellsThing = sellerExists && case weaponsNode of
+                                                 Nothing -> False
+                                                 Just node -> case node of
+                                                                  WeaponsNode wpMap -> thing `M.member` wpMap
+                                                                  _ -> False
 
 -- Initializing the world
 

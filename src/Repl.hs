@@ -49,6 +49,13 @@ performGo world dest = case dest of
                         "to" : place -> W.goTo world place
                         _ -> (world, Echo GD.tryGoingToPlaces)
 
+performBuy :: World -> [Text] -> (World, Action)
+performBuy world what = case what of
+                            [] -> (world, Echo GD.buyWhat)
+                            [thing, "from"] -> (world, Echo $ GD.buyThingFromWho thing)
+                            thing : "from" : seller -> W.buyThingFromSeller world thing seller
+                            _ -> (world, Echo GD.buyFromSomeone)
+
 -- REPL's main entry point for choosing the specific action to execute
 
 chooseAction :: World -> IO Text -> IO (World, Action)
@@ -63,4 +70,5 @@ chooseAction world inputIOed = do
                 "look" : direction -> performLook world direction
                 "go" : loc -> performGo world loc
                 "talk" : obj -> performTalk world obj numForGuard
+                "buy" : what -> performBuy world what
                 _ -> (world, Unknown textPls)
