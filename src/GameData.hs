@@ -182,6 +182,9 @@ entitySays entityName says = "The " <> entityName <> " says: '" <> says <> "'"
 thanksForBuying :: Text -> Text -> Text
 thanksForBuying sellerName thing = "The " <> sellerName <> " says: 'Thanks for buying the " <> thing <> "!"
 
+iSellThese :: Text -> Text -> Text
+iSellThese sellerName items = "The " <> sellerName <> " says: 'You can buy " <> items <> " here.'"
+
 -- Error messages
 
 -- Where errors
@@ -197,6 +200,23 @@ noClueWhereIsObject obj = "No clue where '" <> obj <> "' is ¯\\_(ツ)_/¯"
 
 wrongWhere :: Text
 wrongWhere = "Where... ugh... What do you mean?\nMaybe you meant 'where is <object>' or 'where can i go'\nOr maybe 'where am i'?"
+
+-- What errors
+
+whatWhat :: Text
+whatWhat = "What 'what'?"
+
+whatIsWhat :: Text
+whatIsWhat = "What is... what?"
+
+dontKnowWhatIs :: Text -> Text
+dontKnowWhatIs obj = "Sorry, no clue what " <> obj <> " is ¯\\_(ツ)_/¯"
+
+wrongWhat :: Text
+wrongWhat = "What are you trying to ask?\nTry 'what can i buy' for learning what you can buy here."
+
+canBuyNothingHere :: Text
+canBuyNothingHere = "No one around here seems to be willing to sell you stuff."
 
 -- Look errors
 

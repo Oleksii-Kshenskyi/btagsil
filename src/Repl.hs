@@ -33,6 +33,14 @@ performWhere world what = case what of
                             ["can", "i", "go"] -> (world, Echo $ W.possibleDestinations world)
                             _ -> (world, Echo GD.wrongWhere)
 
+performWhat :: World -> [Text] -> (World, Action)
+performWhat world what = case what of
+                             [] -> (world, Echo GD.whatWhat)
+                             ["is"] -> (world, Echo GD.whatIsWhat)
+                             "is" : obj -> (world, Echo $ GD.dontKnowWhatIs $ T.unwords obj)
+                             ["can", "i", "buy"] -> (world, Echo $ W.possiblePurchases world)
+                             _ -> (world, Echo GD.wrongWhat)
+
 performTalk :: World -> [Text] -> Int -> (World, Action)
 performTalk world obj randInt = case obj of
                                     [] -> (world, Echo GD.okImTalking)
@@ -67,6 +75,7 @@ chooseAction world inputIOed = do
                 ["exit"] -> (world, Exit GD.exitMessage)
                 "echo" : arg -> (world, Echo (T.unwords arg))
                 "where" : what -> performWhere world what
+                "what" : what -> performWhat world what
                 "look" : direction -> performLook world direction
                 "go" : loc -> performGo world loc
                 "talk" : obj -> performTalk world obj numForGuard

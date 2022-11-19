@@ -3,7 +3,7 @@
 module World (
     whereAmI, possibleDestinations, initWorld,
     goTo, lookAround, lookAtObject, lookAtYourWeapon,
-    talkToObject, buyThingFromSeller
+    talkToObject, buyThingFromSeller, possiblePurchases
 ) where
 
 import qualified GameData as GD
@@ -66,6 +66,16 @@ sellThing world thing sellerName = (newWorld, Echo $ GD.thanksForBuying sellerNa
                    _ -> error "World: sellThing: sells behavior node is not a WeaponsNode?!"
           newWorld = world & player . weapon .~ wp
 
+sellerSellsThese :: Object -> Text
+sellerSellsThese seller = GD.iSellThese sellerName items
+    where sellerName = seller ^. oname
+          wpNames = case seller ^. behavior . at "sells" of
+                        Nothing -> error "World: sellerSellsThese: UNREACHABLE: seller doesn't sell?!"
+                        Just node -> case node of
+                                         WeaponsNode wps -> M.keys wps
+                                         _ -> error "World: sellerSellsThese: UNREACHABLE: seller sells something but weapons?!"
+          items = articledEnumeration wpNames "the"
+
 -- Exported (public) functionality used by Repl.hs
 
 -- Navigational actions that don't mutate the world
@@ -79,6 +89,13 @@ possibleDestinations world = GD.youCanGoTo destinations
     where curLoc = getCurLoc world
           connLocs = curLoc ^. connected
           destinations = articledEnumeration connLocs "the"
+
+possiblePurchases :: World -> Text
+possiblePurchases world = case P.length sellers of
+                              0 -> GD.canBuyNothingHere
+                              1 -> sellerSellsThese $ P.head (M.elems sellers)
+                              _ -> error "World: possiblePurchases: UNREACHABLE: several sellers on location?!"
+    where sellers = M.filter (\e -> "sells" `M.member` (e ^. behavior)) (getCurLoc world ^. objects)
 
 lookAround :: World -> Text
 lookAround world = case objNames of
