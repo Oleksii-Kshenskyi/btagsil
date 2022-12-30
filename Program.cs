@@ -3,7 +3,9 @@
 World world = REPL.CreateWorld();
 while (true) {
     Console.Write(Data.System.Prompt);
-    REPL.ParseAction(ReadSingleLine()).Execute(world);
+    var theAction = REPL.ParseAction(ReadSingleLine());
+    Console.Write($"{theAction.Execute(world)}");
+    if(theAction is not Empty) Console.Write("\n\n");
 }
 
 static string[] ReadSingleLine() {

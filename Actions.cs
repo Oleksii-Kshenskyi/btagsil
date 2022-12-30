@@ -2,32 +2,30 @@
 {
     public interface IAction
     {
-        void Execute(World world);
+        string Execute(World world);
     }
 
     public class Exit: IAction {
         public Exit() { }
-        public void Execute(World world) {
-            Console.WriteLine(Data.Exit.Message);
-            Environment.Exit(0);
+        public string Execute(World world) {
+            Console.Write($"{Data.Exit.Message}\n\n");
+            Environment.Exit(0); return "";
         }
     }
 
     public class Empty: IAction {
         public Empty() { }
-        public void Execute(World world) { }
+        public string Execute(World world) => "";
     }
 
     public class Unknown : IAction {
         public Unknown(string verb) => _verb = verb;
-        public void Execute(World world) => Console.WriteLine(Data.Unknown.With(_verb));
+        public string Execute(World world) => Data.Unknown.With(_verb);
         private readonly string _verb;
     }
     public class Echo : IAction {
         public Echo(string[]? echoed) => _echoed = echoed;
-        public void Execute(World world) {
-            Console.WriteLine(_echoed == null ? Data.Echo.What : Data.Echo.With(string.Join(" ", _echoed)));
-        }
+        public string Execute(World world) => _echoed == null ? Data.Echo.What : Data.Echo.With(string.Join(" ", _echoed));
         private readonly string[]? _echoed;
     }
 }
