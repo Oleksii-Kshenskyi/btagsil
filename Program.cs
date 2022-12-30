@@ -2,7 +2,7 @@
 
 World world = REPL.CreateWorld();
 while (true) {
-    Console.Write("^_^ ~~>> ");
+    Console.Write(Data.System.Prompt);
     REPL.ParseAction(ReadSingleLine()).Execute(world);
 }
 

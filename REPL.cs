@@ -9,7 +9,7 @@
         public static Echo ParseEcho(string[] words) => words.Length switch {
             1 => new(null),
             > 1 => new(words.Skip(1).ToArray()),
-            _ => throw new ArgumentException("ParseEcho(): echo with 0 words?!")
+            _ => throw new ArgumentException(Data.Echo.ZeroWordsError)
         };
         public static IAction ParseAction(string[] words) => words[0] switch
         {
