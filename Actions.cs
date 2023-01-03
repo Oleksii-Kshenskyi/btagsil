@@ -9,7 +9,7 @@
         string Execute(World world);
     }
 
-    public class Exit: IAction {
+    public class Exit : IAction {
         public Exit() { }
         public string Execute(World world) {
             Console.Write($"{Data.Exit.Message}\n\n");
@@ -17,7 +17,7 @@
         }
     }
 
-    public class Empty: IAction {
+    public class Empty : IAction {
         public Empty() { }
         public string Execute(World world) => "";
     }
@@ -80,5 +80,31 @@
             return Data.Go.WentTo(location);
         }
         private string _location;
+    }
+
+    public class LookOnlyAtStuff : IAction {
+        public string Execute(World world) => Data.Look.OnlyAtStuff;
+    }
+    public class LookAtWhat : IAction {
+        public string Execute(World world) => Data.Look.AtWhat;
+    }
+    public class UnknownLook : IAction {
+        public string Execute(World world) => Data.Look.Unknown;
+    }
+    public class LookAround : IAction {
+        public string Execute(World world) => world.CurrentLocation.Objects.Select(o => o.Name).ToArray() switch {
+            [] => Data.Look.NothingAround,
+            var objs => Data.Look.SeeObjects(Utils.ArticledEnumeration(objs, "the"))
+        };
+    }
+    public class LookAt : IAction {
+        public LookAt(string objectName) => _objectName = objectName;
+        public string Execute(World world) => world.CurrentLocation.Objects.Where(o => o.Name == _objectName).ToArray() switch
+        {
+            [] => Data.Look.DontSeeObject(_objectName),
+            [var obj] => Data.Look.DescribeObject(obj.Name, obj.Description),
+            _ => throw new NotImplementedException($"LookAt: UNREACHABLE: more than one object with the name {_objectName}?!")
+        };
+        private string _objectName;
     }
 }

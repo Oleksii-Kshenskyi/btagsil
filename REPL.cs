@@ -9,6 +9,7 @@
             "echo" => ParseEcho(words),
             "where" => ParseWhere(words),
             "go" => ParseGo(words),
+            "look" => ParseLook(words),
             "" => ParseEmpty(),
             _ => ParseUnknown(words)
         };
@@ -35,6 +36,14 @@
             ["go", "to"] => new GoToWhere(),
             ["go", "to",.. var location] => new GoTo(string.Join(" ", location)),
             _ => new UnknownGo(),
+        };
+        private static IAction ParseLook(string[] words) => words switch
+        {
+            ["look"] => new LookOnlyAtStuff(),
+            ["look", "at"] => new LookAtWhat(),
+            ["look", "at", .. var obj] => new LookAt(string.Join(" ", obj)),
+            ["look", "around"] => new LookAround(),
+            _ => new UnknownLook()
         };
     }
 }
