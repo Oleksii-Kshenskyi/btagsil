@@ -24,7 +24,11 @@
                 "Did you know there's a fine weapon shop just nearby? Try going there!",
                 "Are you tired?",
                 "I remember that time I was a wee little lad..."
-            }
+            },
+            ["talkMethod"] = new Func<string[], string> ((lines) => {
+                Random rand = new();
+                return lines[rand.Next(0, lines.Length)];
+            })
         };
     }
 
@@ -112,6 +116,13 @@
             public static string SeeObjects(string objects) => $"You see {objects} here.";
             public static string DontSeeObject(string name) => $"You don't see any {name}s around here.";
             public static string DescribeObject(string name, string descr) => $"You see the {name}. It's {descr}.";
+        }
+        public static class Talk {
+            public static string OnlyToStuff => "You can only talk 'to' someone.";
+            public static string ToWho => "Talk to... who?";
+            public static string Unknown => "Are you trying to talk to someone?\nTry 'talk to <object>.\nTry 'look around' to see who's around to talk to.";
+            public static string EntityDoesNotExist(string name) => $"You don't see any {name}s around to talk to.";
+            public static string EntityDoesNotTalk(string name) => $"The {name} doesn't think talking to you is particularly fun.";
         }
     }
 }

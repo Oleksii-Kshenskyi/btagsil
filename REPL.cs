@@ -10,6 +10,7 @@
             "where" => ParseWhere(words),
             "go" => ParseGo(words),
             "look" => ParseLook(words),
+            "talk" => ParseTalk(words),
             "" => ParseEmpty(),
             _ => ParseUnknown(words)
         };
@@ -44,6 +45,13 @@
             ["look", "at", .. var obj] => new LookAt(string.Join(" ", obj)),
             ["look", "around"] => new LookAround(),
             _ => new UnknownLook()
+        };
+        private static IAction ParseTalk(string[] words) => words switch
+        {
+            ["talk"] => new TalkOnlyToStuff(),
+            ["talk", "to"] => new TalkToWho(),
+            ["talk", "to", .. var entity] => new TalkToEntity(string.Join(" ", entity)),
+            _ => new UnknownTalk()
         };
     }
 }

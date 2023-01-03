@@ -105,6 +105,35 @@
             [var obj] => Data.Look.DescribeObject(obj.Name, obj.Description),
             _ => throw new NotImplementedException($"LookAt: UNREACHABLE: more than one object with the name {_objectName}?!")
         };
-        private string _objectName;
+        private readonly string _objectName;
+    }
+    public class TalkOnlyToStuff : IAction {
+        public string Execute(World world) => Data.Talk.OnlyToStuff;
+    }
+    public class TalkToWho : IAction {
+        public string Execute(World world) => Data.Talk.ToWho;
+    }
+    public class UnknownTalk : IAction {
+        public string Execute(World world) => Data.Talk.Unknown;
+    }
+    public class TalkToEntity : IAction {
+        public TalkToEntity(string entityName) => _entityName = entityName;
+        public string Execute(World world) {
+            var found = world.CurrentLocation.Objects.Where(o => o.Name == _entityName).ToArray();
+            bool entityExists = found.Length == 1;
+            var entity = entityExists ? found[0] : null;
+
+            bool entityTalks = entityExists && found[0].Properties.ContainsKey("talks");
+            var lines = entityTalks ? (string[]) found[0].Properties["talks"] : Array.Empty<string>();
+            var talkMethod = entityTalks ? (Func<string[], string>) found[0].Properties["talkMethod"] : (s) => "";
+            return new bool[] { entityExists, entityTalks } switch {
+                [false, false] => Data.Talk.EntityDoesNotExist(_entityName),
+                [true, false] => Data.Talk.EntityDoesNotTalk(_entityName),
+                [true, true] => talkMethod(lines),
+                [false, true] => throw new NotImplementedException($"TalkToEntity: UNREACHABLE: {_entityName} doesn't exist but talks?!"),
+                _ => throw new NotImplementedException()
+            };
+        }
+        private readonly string _entityName;
     }
 }
