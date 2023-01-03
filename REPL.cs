@@ -8,6 +8,7 @@
             "exit" => ParseExit(),
             "echo" => ParseEcho(words),
             "where" => ParseWhere(words),
+            "go" => ParseGo(words),
             "" => ParseEmpty(),
             _ => ParseUnknown(words)
         };
@@ -25,7 +26,15 @@
         {
             ["where"] => new WhereWhat(),
             ["where", "am", "i"] => new WhereAmI(),
+            ["where", "can", "i", "go"] => new WhereCanIGo(),
             _ => new UnknownWhere(),
+        };
+        private static IAction ParseGo(string[] words) => words switch
+        {
+            ["go"] => new GoForgotTo(),
+            ["go", "to"] => new GoToWhere(),
+            ["go", "to",.. var location] => new GoTo(string.Join(" ", location)),
+            _ => new UnknownGo(),
         };
     }
 }
