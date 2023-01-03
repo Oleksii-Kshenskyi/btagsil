@@ -7,6 +7,7 @@
         {
             "exit" => ParseExit(),
             "echo" => ParseEcho(words),
+            "where" => ParseWhere(words),
             "" => ParseEmpty(),
             _ => ParseUnknown(words)
         };
@@ -19,6 +20,12 @@
             1 => new(null),
             > 1 => new(words.Skip(1).ToArray()),
             _ => throw new ArgumentException(Data.Echo.ZeroWordsError)
+        };
+        private static IAction ParseWhere(string[] words) => words switch
+        {
+            ["where"] => new WhereWhat(),
+            ["where", "am", "i"] => new WhereAmI(),
+            _ => new UnknownWhere(),
         };
     }
 }

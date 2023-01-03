@@ -2,5 +2,11 @@
 {
     public class World
     {
+        public IPlayer Player { get; set; } = new Player(Data.Player.StartingLocation, Data.Player.StartingWeapon);
+        public Dictionary<string, ILocation> Locations = new()
+        {
+            ["forest"] = new Forest()
+        };
+        public ILocation CurrentLocation { get { return Locations[Player.CurrentLocation]; } }
     }
 }
