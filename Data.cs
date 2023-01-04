@@ -1,9 +1,37 @@
 ﻿namespace btagsil
 {
+    public interface IWeapon
+    {
+        string Name { get; }
+        string Description { get; }
+    }
+    public class BareFists : IWeapon
+    {
+        public string Name { get; } = "bare fists";
+        public string Description { get; } = "just your bare fists";
+    }
+    public class Axe : IWeapon {
+        public string Name { get; } = "axe";
+        public string Description { get; } = "a humongous razor-sharp double-headed greataxe";
+    }
+    public class Sword : IWeapon {
+        public string Name { get; } = "sword";
+        public string Description { get; } = "a gorgeous long ornamented claymore";
+    }
+    public class Bow : IWeapon {
+        public string Name { get; } = "bow";
+        public string Description { get; } = "a gigantic greatbow that uses spears as arrows";
+    }
+
     public interface IObject {
         public string Name { get; }
         public string Description { get; }
         public Dictionary<string, object> Properties { get; }
+    }
+    public class Dummy : IObject {
+        public string Name { get; } = "dummy";
+        public string Description { get; } = "dummy";
+        public Dictionary<string, object> Properties { get; } = new();
     }
     public class Guard : IObject {
         public string Name { get; } = "guard";
@@ -38,6 +66,7 @@
         {
             ["talks"] = new string[] { "Stop talking and buy something already, you flirtatious vagabond!" },
             ["talkMethod"] = new Func<string[], string>((lines) => lines[0]),
+            ["sells"] = new IWeapon[] { new Axe(), new Sword(), new Bow()},
         };
     }
 
@@ -64,17 +93,6 @@
         public string Description { get; } = "crammed with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye.";
         public string[] Connected { get; } = { "square" };
         public IObject[] Objects { get; } = new IObject[] { new Shopkeeper() };
-    }
-
-    public interface IWeapon
-    {
-        string Name { get; }
-        string Description { get; }
-    }
-    public class BareFists : IWeapon
-    {
-        public string Name { get; } = "bare fists";
-        public string Description { get; } = "just your bare fists";
     }
 
     public interface IPlayer
@@ -131,6 +149,7 @@
             public static string SeeObjects(string objects) => $"You see {objects} here.";
             public static string DontSeeObject(string name) => $"You don't see any {name}s around here.";
             public static string DescribeObject(string name, string descr) => $"You see the {name}. It's {descr}.";
+            public static string AtWeapon(string descr) => $"You see {descr}.";
         }
         public static class Talk {
             public static string OnlyToStuff => "You can only talk 'to' someone.";
@@ -139,6 +158,25 @@
             public static string EntityDoesNotExist(string name) => $"You don't see any {name}s around to talk to.";
             public static string EntityDoesNotTalk(string name) => $"The {name} doesn't think talking to you is particularly fun.";
             public static string ToEntity(string name, string line) => $"The {name} says: '{line}'";
+        }
+        public static class What {
+            public static string TheWhat => "What 'what'?";
+            public static string IsWhat => "What is... what?";
+            public static string DontKnowWhatIs(string thing) => $"No clue what '{thing}' is ¯\\_(ツ)_/¯";
+            public static string Unknown => "What are you trying to ask?\nTry 'what can i buy' to see what you can buy around here.";
+            public static string NoOneIsSelling => "No one seems to be interested in selling you stuff around here.";
+            public static string PurchaseOptions(string things) => $"You can buy {things} here.";
+        }
+        public static class Buy {
+            public static string WhatFromWho => "Buy... what? And who to buy that from?";
+            public static string Unknown => "Are you trying to buy something?\nTry 'what can i buy' to see what you can buy around here.\nTry 'buy <thing> from <seller>' to buy something from someone.";
+            public static string ThingFromWho(string thing) => $"Do you want to buy {thing}?\nWho do you want to buy that from?";
+            public static string StillNoSeller(string thing) => $"Buy {thing} from... who?";
+            public static string SellerDoesNotExist(string seller) => $"You don't see any {seller}s around to sell you stuff.";
+            public static string SellerDoesNotSell(string seller) => $"The {seller} doesn't seem particularly excited about the idea of selling you stuff.";
+            public static string SellerDoesNotSellThing(string thing, string sellerName) => $"The {sellerName} does not have any {thing}s to sell you.";
+            public static string ThanksForPurchase(string thing, string sellerName) => $"The {sellerName} says: 'Thanks for buying the {thing}! Come back anytime!'";
+
         }
     }
 }

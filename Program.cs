@@ -1,4 +1,8 @@
 ﻿using btagsil;
+using System.Text;
+
+Console.InputEncoding = Encoding.UTF8;
+Console.OutputEncoding = Encoding.UTF8;
 
 World world = REPL.CreateWorld();
 while (true) {

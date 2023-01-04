@@ -11,6 +11,8 @@
             "go" => ParseGo(words),
             "look" => ParseLook(words),
             "talk" => ParseTalk(words),
+            "what" => ParseWhat(words),
+            "buy" => ParseBuy(words),
             "" => ParseEmpty(),
             _ => ParseUnknown(words)
         };
@@ -41,6 +43,7 @@
         private static IAction ParseLook(string[] words) => words switch
         {
             ["look"] => new LookOnlyAtStuff(),
+            ["look", "at", "my", "weapon"] => new LookAtWeapon(),
             ["look", "at"] => new LookAtWhat(),
             ["look", "at", .. var obj] => new LookAt(string.Join(" ", obj)),
             ["look", "around"] => new LookAround(),
@@ -52,6 +55,22 @@
             ["talk", "to"] => new TalkToWho(),
             ["talk", "to", .. var entity] => new TalkToEntity(string.Join(" ", entity)),
             _ => new UnknownTalk()
+        };
+        private static IAction ParseWhat(string[] words) => words switch
+        {
+            ["what"] => new WhatWhat(),
+            ["what", "is"] => new WhatIsWhat(),
+            ["what", "is", .. var obj] => new WhatIsDontKnow(string.Join(" ", obj)),
+            ["what", "can", "i", "buy"] => new WhatCanIBuy(),
+            _ => new UnknownWhat(),
+        };
+        private static IAction ParseBuy(string[] words) => words switch
+        {
+            ["buy"] => new BuyWhatFromWho(),
+            ["buy", var thing, "from"] => new BuyStillNoSeller(string.Join(" ", thing)),
+            ["buy", var thing, "from", .. var seller] => new BuyThingFromSeller(thing, string.Join(" ", seller)),
+            ["buy", .. var thing] => new BuyThingFromWho(string.Join(" ", thing)),
+            _ => new UnknownBuy(),
         };
     }
 }
