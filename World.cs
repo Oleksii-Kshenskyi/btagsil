@@ -6,7 +6,8 @@
         public Dictionary<string, ILocation> Locations = new()
         {
             ["forest"] = new Forest(),
-            ["square"] = new Square()
+            ["square"] = new Square(),
+            ["weapon shop"] = new WeaponShop(),
         };
         public ILocation CurrentLocation { get { return Locations[Player.CurrentLocation]; } }
     }

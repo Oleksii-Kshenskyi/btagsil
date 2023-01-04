@@ -31,6 +31,15 @@
             })
         };
     }
+    public class Shopkeeper : IObject {
+        public string Name { get; } = "shopkeeper";
+        public string Description { get; } = "an old man with an eye for trade.\nHe's throwing glances at you hoping you'll buy something from him";
+        public Dictionary<string, object> Properties { get; } = new()
+        {
+            ["talks"] = new string[] { "Stop talking and buy something already, you flirtatious vagabond!" },
+            ["talkMethod"] = new Func<string[], string>((lines) => lines[0]),
+        };
+    }
 
     public interface ILocation {
         public string Name { get; }
@@ -47,8 +56,14 @@
     public class Square : ILocation {
         public string Name { get; } = "square";
         public string Description { get; } = "full of people having fun and minding their business.\nA huge muscular man in heavy armor catches your eye.";
-        public string[] Connected { get; } = { "forest" };
+        public string[] Connected { get; } = { "forest", "weapon shop" };
         public IObject[] Objects { get; } = new IObject[] { new Guard() };
+    }
+    public class WeaponShop : ILocation {
+        public string Name { get; } = "weapon shop";
+        public string Description { get; } = "crammed with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye.";
+        public string[] Connected { get; } = { "square" };
+        public IObject[] Objects { get; } = new IObject[] { new Shopkeeper() };
     }
 
     public interface IWeapon
@@ -123,6 +138,7 @@
             public static string Unknown => "Are you trying to talk to someone?\nTry 'talk to <object>.\nTry 'look around' to see who's around to talk to.";
             public static string EntityDoesNotExist(string name) => $"You don't see any {name}s around to talk to.";
             public static string EntityDoesNotTalk(string name) => $"The {name} doesn't think talking to you is particularly fun.";
+            public static string ToEntity(string name, string line) => $"The {name} says: '{line}'";
         }
     }
 }

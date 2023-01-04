@@ -129,7 +129,7 @@
             return new bool[] { entityExists, entityTalks } switch {
                 [false, false] => Data.Talk.EntityDoesNotExist(_entityName),
                 [true, false] => Data.Talk.EntityDoesNotTalk(_entityName),
-                [true, true] => talkMethod(lines),
+                [true, true] => Data.Talk.ToEntity(_entityName, talkMethod(lines)),
                 [false, true] => throw new NotImplementedException($"TalkToEntity: UNREACHABLE: {_entityName} doesn't exist but talks?!"),
                 _ => throw new NotImplementedException()
             };
