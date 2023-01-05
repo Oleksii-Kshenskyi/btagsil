@@ -8,6 +8,7 @@
             ["forest"] = new Forest(),
             ["square"] = new Square(),
             ["weapon shop"] = new WeaponShop(),
+            ["cave"] = new Cave(),
         };
         public ILocation CurrentLocation { get { return Locations[Player.CurrentLocation]; } }
     }

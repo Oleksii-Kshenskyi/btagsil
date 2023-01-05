@@ -69,6 +69,11 @@
             ["sells"] = new IWeapon[] { new Axe(), new Sword(), new Bow()},
         };
     }
+    public class Monster : IObject {
+        public string Name { get; } = "monster";
+        public string Description { get; } = "a chilling monstrosity. It has briars and spikes all over its hardened skin.\nIt clearly doesn't like you";
+        public Dictionary<string, object> Properties { get; } = new();
+    }
 
     public interface ILocation {
         public string Name { get; }
@@ -85,7 +90,7 @@
     public class Square : ILocation {
         public string Name { get; } = "square";
         public string Description { get; } = "full of people having fun and minding their business.\nA huge muscular man in heavy armor catches your eye.";
-        public string[] Connected { get; } = { "forest", "weapon shop" };
+        public string[] Connected { get; } = { "forest", "weapon shop", "cave" };
         public IObject[] Objects { get; } = new IObject[] { new Guard() };
     }
     public class WeaponShop : ILocation {
@@ -93,6 +98,12 @@
         public string Description { get; } = "crammed with fine quality weapons to buy.\nAn axe, a sword and a bow catch your eye.";
         public string[] Connected { get; } = { "square" };
         public IObject[] Objects { get; } = new IObject[] { new Shopkeeper() };
+    }
+    public class Cave : ILocation {
+        public string Name { get; } = "cave";
+        public string Description { get; } = "chilly and dark in here and the silence seems almost deafening.\nAlthough, wait... Was that a growl?";
+        public string[] Connected { get; } = { "square" };
+        public IObject[] Objects { get; } = new IObject[] { new Monster() };
     }
 
     public interface IPlayer
