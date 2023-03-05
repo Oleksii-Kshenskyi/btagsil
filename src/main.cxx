@@ -9,12 +9,14 @@
     #include "ftxui/component/screen_interactive.hpp"
     #include "ftxui/screen/color.hpp"
 
+    #include "boost/filesystem.hpp"
+
 int main() {
     using namespace ftxui;
     Element document = graph([](int x, int y) {
         std::vector<int> result(x, 0);
         for (int i{0}; i < x; ++i) {
-        result[i] = ((3 * i) / 2) % y;
+            result[i] = ((3 * i) / 2) % y;
         }
         return result;
     });
@@ -23,10 +25,11 @@ int main() {
     document |= bgcolor(Color::DarkBlue);
     document |= border;
     std::vector<Event> ve;
+    std::string caption = boost::filesystem::current_path().string();
     auto screen = ScreenInteractive::Fullscreen();
     auto main_component = Renderer([&] {
         return vbox({
-            text("KEKW!!!") | size(HEIGHT, GREATER_THAN, 2) | hcenter,
+            text(caption) | size(HEIGHT, GREATER_THAN, 2) | hcenter,
             document,
         });
     });
