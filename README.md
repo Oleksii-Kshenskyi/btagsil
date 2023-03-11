@@ -35,7 +35,7 @@ mkdir build
 cd build
 cmake .. -G "Unix Makefiles"
 make -j16
-btagsil
+./btagsil
 ```
 
 This obviously needs a Bash with Unix buildtools (make), cmake and a compiler (GCC is the main target) already be correctly installed and in your PATH for this to work.
