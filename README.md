@@ -30,11 +30,13 @@ The project uses CMake to build, for now it's being tested on GCC on Linux and o
 
 The commands for building BTAGSIL (needs a Bash on both Windows and Linux, use Cmder or Git Bash on Windows):
 
-`mkdir build`
-`cd build`
-`cmake .. -G "Unix Makefiles"`
-`make -j16`
-`btagsil`
+```bash
+mkdir build
+cd build
+cmake .. -G "Unix Makefiles"
+make -j16
+btagsil
+```
 
 This obviously needs a Bash with Unix buildtools (make), cmake and a compiler (GCC is the main target) already be correctly installed and in your PATH for this to work.
 
