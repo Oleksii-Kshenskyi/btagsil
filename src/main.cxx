@@ -1,42 +1,24 @@
-    #include <stdlib.h>
-    #include "ftxui/component/component.hpp"
-    #include <ftxui/dom/elements.hpp>
-    #include <ftxui/screen/screen.hpp>
-    #include <vector>
+#include <boost/hof.hpp>
 
-    #include "ftxui/component/event.hpp"
-    #include "ftxui/dom/node.hpp"
-    #include "ftxui/component/screen_interactive.hpp"
-    #include "ftxui/screen/color.hpp"
+#include <iostream>
 
-    #include "boost/filesystem.hpp"
+using namespace boost::hof;
+
+// A sum function object
+struct sum_f
+{
+    template<class T, class U>
+    auto operator()(T x, U y) const
+    {
+        return x + y;
+    }
+};
+
+BOOST_HOF_STATIC_FUNCTION(sum) = pipable(sum_f());
 
 int main() {
-    using namespace ftxui;
-    Element document = graph([](int x, int y) {
-        std::vector<int> result(x, 0);
-        for (int i{0}; i < x; ++i) {
-            result[i] = ((3 * i) / 2) % y;
-        }
-        return result;
-    });
+    auto thirteen = 3 | sum(6) | sum(4);
+    std::cout << "Boost.HOF pipable: should be thirteen: " << thirteen << std::endl;
 
-    document |= color(Color::Red);
-    document |= bgcolor(Color::DarkBlue);
-    document |= border;
-    std::vector<Event> ve;
-    std::string caption = boost::filesystem::current_path().string();
-    auto screen = ScreenInteractive::Fullscreen();
-    auto main_component = Renderer([&] {
-        return vbox({
-            text(caption) | size(HEIGHT, GREATER_THAN, 2) | hcenter,
-            document,
-        });
-    });
-
-    main_component |= CatchEvent([&](Event e) {
-        if(e.is_character() && e.character() == "q") exit(0);
-        return true;
-    });
-    screen.Loop(main_component);
+    return 0;
 }

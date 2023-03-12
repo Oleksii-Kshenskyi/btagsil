@@ -5,37 +5,25 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(GAME_SRC ${SRC_DIR}/main.cxx)
 set(GAME_INCLUDES ${SRC_DIR})
 
-set(BOOST_INCLUDE_LIBRARIES thread filesystem system program_options)
+set(BOOST_INCLUDE_LIBRARIES hof)
 set(BOOST_ENABLE_CMAKE ON)
 
 # FetchContent: retrieving thirdparty dependencies
 include(FetchContent)
+set(FETCHCONTENT_QUIET FALSE)
 
 # Thirdparty dependency: Boost
 FetchContent_Declare(
   Boost
   GIT_REPOSITORY https://github.com/boostorg/boost.git
   GIT_TAG boost-1.81.0
+  GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(Boost)
-
-# Thirdpartydependency: FTXUI
-FetchContent_Declare(ftxui
-  GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
-  GIT_TAG v4.0.0
-)
-FetchContent_GetProperties(ftxui)
-if(NOT ftxui_POPULATED)
-  FetchContent_Populate(ftxui)
-  add_subdirectory(${ftxui_SOURCE_DIR} ${ftxui_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-FetchContent_MakeAvailable(ftxui)
 
 include_directories(${GAME_INCLUDES})
 
 add_executable(btagsil ${GAME_SRC})
-target_link_libraries(btagsil PRIVATE Boost::filesystem
-                                      Boost::program_options
-                                      ftxui::dom
-                                      ftxui::screen
-                                      ftxui::component)
+target_link_libraries(btagsil PUBLIC Boost::hof)
+set_target_properties(btagsil PROPERTIES CXX_STANDARD_REQUIRED 20
+                                         CMAKE_CXX_STANDARD 20)
