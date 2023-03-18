@@ -17,13 +17,7 @@ set(CMAKE_MODULES ${BT_PROJECT_DIR}/cmake/modules)
 include(${CMAKE_MODULES}/warnings.cmake)
 
 # All the targets BTAGSIL's entry points link to
-set(THIRDPARTY_TARGETS Boost::hof)
-set(INTERNAL_TARGETS engine)
-
-
-# All thirdparty libs that BTAGSIL uses are defined here
-include(${CMAKE_MODULES}/thirdparty.cmake)
-
+set(INTERNAL_TARGETS engine thirdparty)
 
 # Sub-targets just include headers starting from the src directory, same as the entry points
 include_directories(${GAME_INCLUDES})
@@ -33,4 +27,5 @@ add_subdirectory(${BT_SRC_DIR})
 
 # BTAGSIL's entry points
 add_executable(btagsil-cli ${BT_CLI})
-target_link_libraries(btagsil-cli PUBLIC ${THIRDPARTY_TARGETS} ${INTERNAL_TARGETS})
+target_link_libraries(btagsil-cli PRIVATE ${INTERNAL_TARGETS})
+target_compile_options(btagsil-cli PRIVATE ${BT_WARNINGS_NORMAL})

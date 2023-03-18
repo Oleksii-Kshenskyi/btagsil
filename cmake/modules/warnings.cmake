@@ -1,21 +1,13 @@
-message("warnings.cmake: triggered!")
+set(BT_WARNINGS_NONE)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall
-                        -Wextra
-                        -Wpedantic
-                        -Wconversion
-                        -Wsign-conversion
-                        -Werror
-                        -Werror=conversion
-                        -Werror=sign-conversion)
+    list(APPEND BT_WARNINGS_NONE -Wno-deprecated-builtins)
+    list(APPEND BT_WARNINGS_NORMAL -Wall -Wextra -Werror -Wno-deprecated-builtins)
+    list(APPEND BT_WARNINGS_STRICT -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Werror -Werror=conversion -Werror=sign-conversion)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    add_compile_options(-Wall
-                        -Wextra
-                        -Wpedantic
-                        -Wconversion
-                        -Wsign-conversion
-                        -Werror)
+    list(APPEND BT_WARNINGS_NORMAL -Wall -Wextra -Werror)
+    list(APPEND BT_WARNINGS_STRICT -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Werror)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    add_compile_options(/W4
-                        /WX)
+    list(APPEND BT_WARNINGS_NORMAL /W3 /WX)
+    list(APPEND BT_WARNINGS_STRICT /W4 /WX)
 endif()
