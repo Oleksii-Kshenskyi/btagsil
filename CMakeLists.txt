@@ -6,31 +6,23 @@ project(btagsil)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(BT_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(BT_PROJECT_DIR ${CMAKE_SOURCE_DIR})
+set(BT_SRC_DIR ${BT_PROJECT_DIR}/src)
 set(BT_ENTRY_DIR ${BT_SRC_DIR}/entry)
 set(BT_CLI ${BT_ENTRY_DIR}/btagsil_cli_main.cxx)
 set(GAME_INCLUDES ${BT_SRC_DIR})
 
+# Specify the directory for CMake modules used and enable compiler warnings
+set(CMAKE_MODULES ${BT_PROJECT_DIR}/cmake/modules)
+include(${CMAKE_MODULES}/warnings.cmake)
 
 # All the targets BTAGSIL's entry points link to
 set(THIRDPARTY_TARGETS Boost::hof)
 set(INTERNAL_TARGETS engine)
 
 
-# Thirdparty dependencies
-set(BOOST_INCLUDE_LIBRARIES hof)
-set(BOOST_ENABLE_CMAKE ON)
-# FetchContent: retrieving thirdparty dependencies
-include(FetchContent)
-set(FETCHCONTENT_QUIET FALSE)
-# Thirdparty dependency: Boost
-FetchContent_Declare(
-  Boost
-  GIT_REPOSITORY https://github.com/boostorg/boost.git
-  GIT_TAG boost-1.81.0
-  GIT_PROGRESS TRUE
-)
-FetchContent_MakeAvailable(Boost)
+# All thirdparty libs that BTAGSIL uses are defined here
+include(${CMAKE_MODULES}/thirdparty.cmake)
 
 
 # Sub-targets just include headers starting from the src directory, same as the entry points
