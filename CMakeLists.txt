@@ -1,29 +1,37 @@
 cmake_minimum_required(VERSION 3.20)
 project(btagsil)
 
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
-set(GAME_SRC ${SRC_DIR}/main.cxx)
-set(GAME_INCLUDES ${SRC_DIR})
 
-set(BOOST_INCLUDE_LIBRARIES hof)
-set(BOOST_ENABLE_CMAKE ON)
+# Global properties for the entire project
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# FetchContent: retrieving thirdparty dependencies
-include(FetchContent)
-set(FETCHCONTENT_QUIET FALSE)
+set(BT_PROJECT_DIR ${CMAKE_SOURCE_DIR})
+set(BT_SRC_DIR ${BT_PROJECT_DIR}/src)
+set(BT_ENTRY_DIR ${BT_SRC_DIR}/entry)
+set(BT_CLI_ENTRY ${BT_ENTRY_DIR}/btagsil_cli_main.cxx)
+set(BT_SANDBOX_ENTRY ${BT_ENTRY_DIR}/sandbox.cxx)
+set(GAME_INCLUDES ${BT_SRC_DIR})
 
-# Thirdparty dependency: Boost
-FetchContent_Declare(
-  Boost
-  GIT_REPOSITORY https://github.com/boostorg/boost.git
-  GIT_TAG boost-1.81.0
-  GIT_PROGRESS TRUE
-)
-FetchContent_MakeAvailable(Boost)
+# Specify the directory for CMake modules used and enable compiler warnings
+set(CMAKE_MODULES ${BT_PROJECT_DIR}/cmake/modules)
+include(${CMAKE_MODULES}/warnings.cmake)
 
+# All the targets BTAGSIL's entry points link to
+set(INTERNAL_TARGETS engine thirdparty)
+
+# Sub-targets just include headers starting from the src directory, same as the entry points
 include_directories(${GAME_INCLUDES})
+# All the subtargets are in the src directory
+add_subdirectory(${BT_SRC_DIR})
 
-add_executable(btagsil ${GAME_SRC})
-target_link_libraries(btagsil PUBLIC Boost::hof)
-set_target_properties(btagsil PROPERTIES CXX_STANDARD_REQUIRED 20
-                                         CMAKE_CXX_STANDARD 20)
+
+# BTAGSIL's entry points
+add_executable(btagsil-cli ${BT_CLI_ENTRY})
+target_link_libraries(btagsil-cli PRIVATE ${INTERNAL_TARGETS})
+target_compile_options(btagsil-cli PRIVATE ${BT_WARNINGS_NORMAL})
+
+# Sandbox executable for experimentation and figuring out C++
+add_executable(sandbox ${BT_SANDBOX_ENTRY})
+target_link_libraries(sandbox PRIVATE ${INTERNAL_TARGETS})
+target_compile_options(sandbox PRIVATE ${BT_WARNINGS_NORMAL})
