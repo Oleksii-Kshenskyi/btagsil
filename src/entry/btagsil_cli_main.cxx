@@ -14,8 +14,5 @@ int main() {
         std::cout << "Echoed: '" << user_input << "'" << std::endl << std::endl;
     }
 
-    engine::say_kekw();
-    thirdparty::test_thirdparty();
-
     return 0;
 }

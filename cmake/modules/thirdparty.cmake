@@ -1,5 +1,5 @@
 # Thirdparty dependencies
-set(BOOST_INCLUDE_LIBRARIES json hof filesystem)
+set(BOOST_INCLUDE_LIBRARIES algorithm)
 set(BOOST_ENABLE_CMAKE ON)
 # FetchContent: retrieving thirdparty dependencies
 include(FetchContent)

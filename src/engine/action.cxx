@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "engine/action.hxx"
+#include "engine/data.hxx"
 
 template<class... Ts> struct ActionHandlers : Ts... { using Ts::operator()...; };
 template<class... Ts> ActionHandlers(Ts...) -> ActionHandlers<Ts...>;
@@ -15,24 +16,24 @@ struct Echo {
 };
 using Action = std::variant<Empty, Unknown, Echo, Exit>;
 
-Action action_from_input(const std::string& user_input) {
-    std::string first_word { lowercase(first_word_of(user_input)) };
+static Action action_from_input(std::string&& user_input) {
+    std::string first_word { user_input }; first_word = lowercase(first_word_of(std::move(first_word)));
     if(first_word.empty()) {
         return Action { Empty {} };
     } else if(first_word == "echo") {
-        return Action { Echo { rest(user_input) } };
+        return Action { Echo { rest(std::move(user_input)) } };
     } else if(first_word == "exit") {
         return Action { Exit {} };
-    } else return Action { Unknown { user_input } };
+    } else return Action { Unknown { std::move(user_input) } };
 }
 
-std::string respond_to_action(const std::string& user_input) {
-    Action actual_action = action_from_input(user_input);
+std::string respond_to_action(std::string&& user_input) {
+    Action actual_action = action_from_input(std::move(user_input));
     return std::visit(ActionHandlers {
         [](Empty act) { (void) act; return std::string(); },
         [](Exit act) {
             (void) act;
-            std::cout << Data::EXIT_MESSAGE << std::endl;
+            std::cout << Data::EXIT_MESSAGE << std::endl << std::endl;
             std::exit(0);
             return std::string();
         },
