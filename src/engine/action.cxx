@@ -1,7 +1,14 @@
 #include <iostream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <type_traits>
+#include <variant>
 
 #include "engine/action.hxx"
 #include "engine/data.hxx"
+#include "thirdparty/string_utils.hxx"
 
 template<class... Ts> struct ActionHandlers : Ts... { using Ts::operator()...; };
 template<class... Ts> ActionHandlers(Ts...) -> ActionHandlers<Ts...>;
@@ -21,7 +28,7 @@ static Action action_from_input(std::string&& user_input) {
     if(first_word.empty()) {
         return Action { Empty {} };
     } else if(first_word == "echo") {
-        return Action { Echo { rest(std::move(user_input)) } };
+        return Action { Echo { skip_first_word(std::move(user_input)) } };
     } else if(first_word == "exit") {
         return Action { Exit {} };
     } else return Action { Unknown { std::move(user_input) } };
@@ -37,8 +44,8 @@ std::string respond_to_action(std::string&& user_input) {
             std::exit(0);
             return std::string();
         },
-        [](Unknown act) { return std::format(Data::UNKNOWN_ACTION, act.thing); },
-        [](Echo act) { return std::format(Data::ECHOED_STRING, act.echoed); }
+        [](Unknown act) { return Data::unknown_action(std::move(act.thing)); },
+        [](Echo act) { return Data::echoed_string(std::move(act.echoed)); }
     }, actual_action);
 }
 
