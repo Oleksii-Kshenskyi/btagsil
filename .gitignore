@@ -1,2 +1,1 @@
-build/
-.*.el
+__pycache__
