@@ -27,7 +27,7 @@ As for 0.3.0, it's too early to even theorize what could end up there.
 
 ## Building and playing
 
-As for now (the almost-empty Python prototype stage), I'll be using the "main Python file in the root of the repo plus a bunch of implementation details in the `src` folder" kind of structure. Probably with a separate `tests` folder. So in order to run the game, just use the `python` executable to run the .py file in the root of the repo.
+As for now (the almost-empty Python prototype stage), I'll be using the "main Python file in the root of the repo plus a bunch of implementation details in the `game` folder" kind of structure. Probably with a separate `tests` folder. So in order to run the game, just use the `python` executable to run the `sky.py` file in the root of the repo.
 
 ## Licensing
 
