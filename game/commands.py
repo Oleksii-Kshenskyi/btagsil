@@ -3,6 +3,7 @@ import sys
 
 import game.data as d
 import game.world as w
+import game.logic as l
 
 @dataclass
 class Empty:
@@ -32,14 +33,17 @@ def parse_where(where_args: list[str], TheWorld: d.World) -> str:
     match where_args:
         case []: return "Where what?"
         case ["am", "i"]: return w.name_current_place(TheWorld)
-        case a: return f"No clue where `{' '.join(a)}` is T_T"
+        case ["is"]: return "Where is what?"
+        case ["is", *what]: return f"No clue where `{' '.join(what)}` is T_T"
+        case [*what]: return f"Did you want to ask `where is {l.box(what).join()}`?"
 
 def parse_what(what_args: list[str], TheWorld: d.World) -> str:
     match what_args:
         case []: return "What `what`?"
         case ["is", "this", "place"]: return w.describe_current_place(TheWorld)
-        case ["is", *thing]: return f"No clue what `{' '.join(thing)} is ¯\_(*_*)_/¯`"
-        case a: return f"What `{' '.join(a)}`?"
+        case ["is"]: return "What is what?"
+        case ["is", *thing]: return f"No clue what `{' '.join(thing)}` is ¯\_(*_*)_/¯"
+        case a: return f"What `{' '.join(a)}` what?"
 
 def parse_command(user_input: str, TheWorld: d.World) -> Command:
     match user_input.lower().split(sep=None):
