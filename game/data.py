@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from game.logic import box
+from game.logic import box, ChanceBox
 
 @dataclass
 class Place:
     id: str
     display_name: str
-    description: str
+    description: ChanceBox
     adjacent: list[str]
 
 @dataclass
