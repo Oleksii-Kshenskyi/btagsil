@@ -9,3 +9,7 @@ class TextError(GameError):
 class ChanceBoxError(TextError):
     def __init__(self, text):
         super.__init__(text=text)
+
+class UnreachableError(TextError):
+    def __init__(self, text):
+        super.__init__(text=text)
