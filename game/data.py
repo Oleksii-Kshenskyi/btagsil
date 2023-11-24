@@ -29,3 +29,11 @@ def void() -> Place:
         description=box(["Boiling.", "Searing.", "Deafeningly silent.", "Pitch black.", "Nothing.", "The Void."]),
         adjacent=[]
     )
+
+def white_room() -> Place:
+    return Place(
+        id="white-room",
+        display_name="The White Room",
+        description=box(["It's a room.", "It's white.", "Painfully so.", "What's its purpose?.", "No one knows. It's just there."]),
+        adjacent=[]
+    )

@@ -42,6 +42,6 @@ def go_to_place(place: list[str], TheWorld: d.World) -> str:
 
 def create_world() -> d.World:
     return d.World(
-        places={"void": d.void()},
+        places={"void": d.void(), "white-room": d.white_room()},
         player=d.create_player()
     )
