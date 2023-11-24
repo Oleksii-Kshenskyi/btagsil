@@ -22,12 +22,6 @@ def name_current_place(TheWorld: d.World) -> str:
 def describe_current_place(TheWorld) -> str:
     return _current_place_description(TheWorld)
 
-def create_new_place(TheWorld: d.World, name: str) -> str:
-    name = name if name != None else "Place " + str(len(TheWorld.places))
-    new_id = box(name.split(sep=None)).to_id()
-    TheWorld.places[new_id] = d.Place(new_id, name, l.box([]), [])
-    return f"You gaze at The Void.\nYou make It birth you a new place.\nIt emerges from the boiling Darkness of The Void as `{name}`."
-
 def _change_current_location(place_id: str, TheWorld: d.World):
     TheWorld.player.current_location = place_id
     return f"You went to `{_current_place(TheWorld).display_name}`."

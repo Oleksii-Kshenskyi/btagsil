@@ -24,17 +24,6 @@ class SystemEcho:
 
 Command = Empty | Unknown | Exit | Echo | SystemEcho
 
-def parse_create(create_args: list[str], TheWorld: d.World) -> str:
-    match create_args:
-        case []: return "What would You like to create?"
-        case ["place"]: return w.create_new_place(TheWorld, None)
-        case ["place", "called"]: return "What should the new place be called?"
-        case ["new", "place"]: return w.create_new_place(TheWorld, None)
-        case ["new", "place", "called"]: return "What should the new place be called?"
-        case ["place", "called", *newname]: return w.create_new_place(TheWorld, l.box(newname).to_words())
-        case ["new", "place", "called", *newname]: return w.create_new_place(TheWorld, l.box(newname).to_words())
-        case _: return f"You ponder, unsure how to create the concept of `{l.box(create_args).to_words()}`."
-
 def parse_where(where_args: list[str], TheWorld: d.World) -> str:
     match where_args:
         case []: return "Where what?"
@@ -61,7 +50,6 @@ def parse_go(to: list[str], TheWorld: d.World) -> str:
 def parse_command(user_input: str, TheWorld: d.World) -> Command:
     match user_input.lower().split(sep=None):
         case []: return Empty()
-        case ["create", *what]: return SystemEcho(string=parse_create(what, TheWorld))
         case ["go", *to]: return SystemEcho(string=parse_go(to, TheWorld))
         case ["where", *what]: return SystemEcho(string=parse_where(what, TheWorld))
         case ["what", *what]: return SystemEcho(string=parse_what(what, TheWorld))
