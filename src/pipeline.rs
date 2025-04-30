@@ -20,6 +20,7 @@ pub fn anyr<T: 'static + Send>(value: T) -> AnyResult {
 }
 
 pub trait Stage: Send {
+    // TODO: implement Stage name, so visializer is in the form of `StageName: {Input} -> {Output}`
     fn visualize(&self) -> String;
     fn run(&self, input: AnyResult) -> Result<AnyResult, PipelineError>;
     fn input_typeid(&self) -> TypeId;
@@ -97,6 +98,7 @@ where
 }
 
 // TODO: create a nice wrapper around the pipeline/stages to make it nicer to use
+#[derive(Default)]
 pub struct Pipeline {
     stages: Vec<Box<dyn Stage>>,
 }

@@ -13,10 +13,7 @@ fn main() -> Result<()> {
     let mut pipeline = Pipeline::new();
     pipeline.push_stage(stage(|i: i32| i + 10))?;
     pipeline.push_stage(stage(|i: i32| {
-        vec![i; 10]
-            .iter()
-            .map(|ie| ie.to_string())
-            .collect::<Vec<_>>()
+        [i; 10].iter().map(|ie| ie.to_string()).collect::<Vec<_>>()
     }))?;
     pipeline.push_stage(stage(|v: Vec<String>| v.join(" ")))?;
 
