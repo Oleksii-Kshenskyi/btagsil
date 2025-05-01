@@ -20,9 +20,10 @@ pub fn anyr<T: 'static + Send>(value: T) -> AnyResult {
 }
 
 pub trait Stage: Send {
-    fn name(&self) -> String;
+    fn name(&self) -> &str;
     fn visualize(&self) -> String;
     fn run(&self, input: AnyResult) -> Result<AnyResult, PipelineError>;
+
     fn input_typeid(&self) -> TypeId;
     fn input_typename(&self) -> &'static str;
     fn output_typeid(&self) -> TypeId;
@@ -47,8 +48,8 @@ where
     O: 'static + Send,
     F: Fn(I) -> O + Send + 'static,
 {
-    fn name(&self) -> String {
-        self.name.clone()
+    fn name(&self) -> &str {
+        self.name.as_str()
     }
 
     fn visualize(&self) -> String {
@@ -94,7 +95,7 @@ impl Display for dyn Stage {
     }
 }
 
-pub fn stage<I, O, F>(name: String, func: F) -> Box<dyn Stage>
+pub fn stage<I, O, F>(name: &str, func: F) -> Box<dyn Stage>
 where
     I: 'static + Send,
     O: 'static + Send,
@@ -104,7 +105,7 @@ where
         _input: Default::default(),
         _output: Default::default(),
         func,
-        name,
+        name: name.to_owned(),
     })
 }
 

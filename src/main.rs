@@ -11,11 +11,11 @@ fn main() -> Result<()> {
     let starter = 13;
 
     let mut pipeline = Pipeline::new();
-    pipeline.push_stage(stage("+10".to_owned(), |i: i32| i + 10))?;
-    pipeline.push_stage(stage("->vec".to_owned(), |i: i32| {
+    pipeline.push_stage(stage("+10", |i: i32| i + 10))?;
+    pipeline.push_stage(stage("->vec", |i: i32| {
         [i; 10].iter().map(|ie| ie.to_string()).collect::<Vec<_>>()
     }))?;
-    pipeline.push_stage(stage("join vec".to_owned(), |v: Vec<String>| v.join(" ")))?;
+    pipeline.push_stage(stage("join vec", |v: Vec<String>| v.join(" ")))?;
 
     let got = *pipeline
         .run(anyr(starter))?
