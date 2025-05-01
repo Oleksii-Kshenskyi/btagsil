@@ -11,11 +11,11 @@ fn main() -> Result<()> {
     let starter = 13;
 
     let mut pipeline = Pipeline::new();
-    pipeline.push_stage(stage(|i: i32| i + 10))?;
-    pipeline.push_stage(stage(|i: i32| {
+    pipeline.push_stage(stage("+10".to_owned(), |i: i32| i + 10))?;
+    pipeline.push_stage(stage("->vec".to_owned(), |i: i32| {
         [i; 10].iter().map(|ie| ie.to_string()).collect::<Vec<_>>()
     }))?;
-    pipeline.push_stage(stage(|v: Vec<String>| v.join(" ")))?;
+    pipeline.push_stage(stage("join vec".to_owned(), |v: Vec<String>| v.join(" ")))?;
 
     let got = *pipeline
         .run(anyr(starter))?
@@ -24,5 +24,7 @@ fn main() -> Result<()> {
         .expect("Final main downcast failed!!");
 
     println!("GOT!! => `{}`", got);
+
+    println!("{}", pipeline.visualize());
     Ok(())
 }

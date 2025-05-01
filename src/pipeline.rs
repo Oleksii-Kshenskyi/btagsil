@@ -20,7 +20,7 @@ pub fn anyr<T: 'static + Send>(value: T) -> AnyResult {
 }
 
 pub trait Stage: Send {
-    // TODO: implement Stage name, so visializer is in the form of `StageName: {Input} -> {Output}`
+    fn name(&self) -> String;
     fn visualize(&self) -> String;
     fn run(&self, input: AnyResult) -> Result<AnyResult, PipelineError>;
     fn input_typeid(&self) -> TypeId;
@@ -38,6 +38,7 @@ where
     _input: std::marker::PhantomData<I>,
     _output: std::marker::PhantomData<O>,
     func: F,
+    name: String,
 }
 
 impl<I, O, F> Stage for StageImpl<I, O, F>
@@ -46,8 +47,17 @@ where
     O: 'static + Send,
     F: Fn(I) -> O + Send + 'static,
 {
+    fn name(&self) -> String {
+        self.name.clone()
+    }
+
     fn visualize(&self) -> String {
-        std::any::type_name::<F>().to_string()
+        format!(
+            "Stage `{}`: {{{} => {}}}",
+            self.name,
+            self.input_typename(),
+            self.output_typename()
+        )
     }
 
     fn run(&self, input: AnyResult) -> Result<AnyResult, PipelineError> {
@@ -84,7 +94,7 @@ impl Display for dyn Stage {
     }
 }
 
-pub fn stage<I, O, F>(func: F) -> Box<dyn Stage>
+pub fn stage<I, O, F>(name: String, func: F) -> Box<dyn Stage>
 where
     I: 'static + Send,
     O: 'static + Send,
@@ -94,10 +104,11 @@ where
         _input: Default::default(),
         _output: Default::default(),
         func,
+        name,
     })
 }
 
-// TODO: create a nice wrapper around the pipeline/stages to make it nicer to use
+// TODO: create a nice macro wrapper around the pipeline/stages to make it nicer to use
 #[derive(Default)]
 pub struct Pipeline {
     stages: Vec<Box<dyn Stage>>,
@@ -129,5 +140,17 @@ impl Pipeline {
         }
 
         Ok(current)
+    }
+
+    pub fn visualize(&self) -> String {
+        let mut buffer: String = String::new();
+        for (index, stage) in self.stages.iter().enumerate() {
+            buffer.push_str(&stage.visualize());
+            if index != self.stages.len() - 1 {
+                buffer.push('\n');
+            }
+        }
+
+        buffer
     }
 }
