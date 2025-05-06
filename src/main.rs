@@ -1,6 +1,9 @@
 pub mod errors;
+pub mod knowledge;
+pub mod parser;
 pub mod pipeline;
 
+use crate::parser::Command;
 use crate::pipeline::*;
 use anyhow::Result;
 
@@ -26,5 +29,6 @@ fn main() -> Result<()> {
     println!("GOT!! => `{}`", got);
 
     println!("{}", pipeline.visualize());
+    dbg!(Command::new("..."));
     Ok(())
 }
