@@ -3,32 +3,23 @@ pub mod knowledge;
 pub mod parser;
 pub mod pipeline;
 
-use crate::parser::Command;
+use crate::parser::{Command, parser_stage};
 use crate::pipeline::*;
 use anyhow::Result;
 
-// First stage: takes 13, adds 10
-// Second stage: takes result, creates vector of 10 strings of S1
-// Third stage: takes vector of strings, joins them by space
 fn main() -> Result<()> {
-    let starter = 13;
+    let starter = "?!   f   oko    j.    nn ?..".to_owned();
 
     let mut pipeline = Pipeline::new();
-    pipeline.push_stage(stage("+10", |i: i32| i + 10))?;
-    pipeline.push_stage(stage("->vec", |i: i32| {
-        [i; 10].iter().map(|ie| ie.to_string()).collect::<Vec<_>>()
-    }))?;
-    pipeline.push_stage(stage("join vec", |v: Vec<String>| v.join(" ")))?;
+    pipeline.push_stage(parser_stage())?;
 
     let got = *pipeline
         .run(anyr(starter))?
         .value
-        .downcast::<String>()
+        .downcast::<Command>()
         .expect("Final main downcast failed!!");
 
-    println!("GOT!! => `{}`", got);
-
     println!("{}", pipeline.visualize());
-    dbg!(Command::new("..."));
+    dbg!(got);
     Ok(())
 }

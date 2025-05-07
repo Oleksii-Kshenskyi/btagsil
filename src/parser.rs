@@ -8,6 +8,62 @@ use crate::pipeline::*;
 /// is the responsibility of the next stage. This is just parsing the unstructured
 /// user input into a structured and easily processable format.
 
+struct Punct {
+    subject: String,
+}
+
+impl Punct {
+    pub fn new(subject: &str) -> Self {
+        Self {
+            subject: subject.to_owned(),
+        }
+    }
+
+    pub fn split_three(&self) -> (Option<String>, Vec<String>, Option<String>) {
+        let trimmed = self.subject.trim();
+        let front = Self::front(&trimmed);
+        let back = Self::back(&trimmed);
+
+        let no_prefix = match &front {
+            Some(prefix) => &trimmed[prefix.len()..],
+            None => &trimmed,
+        };
+
+        let middle = match &back {
+            Some(suffix) => &no_prefix[..no_prefix.len() - suffix.len()],
+            None => no_prefix,
+        };
+        let words = middle
+            .split_whitespace()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+
+        (front, words, back)
+    }
+
+    pub fn front(subject: &str) -> Option<String> {
+        let punct = subject
+            .chars()
+            .take_while(|c| c.is_ascii_punctuation())
+            .collect::<String>();
+
+        (!punct.is_empty()).then_some(punct)
+    }
+
+    pub fn back(subject: &str) -> Option<String> {
+        let backpunct = (subject
+            .chars()
+            .rev()
+            .take_while(|c| c.is_ascii_punctuation())
+            .collect::<String>())
+        .chars()
+        .rev()
+        .collect::<String>();
+
+        (!backpunct.is_empty()).then_some(backpunct)
+    }
+}
+
 // TODO: need to start thinking about integrating word lists in text file / JSON form
 //       ASAP instead of just hardcoding them in the code.
 #[derive(Debug, Clone)]
@@ -20,8 +76,19 @@ pub struct Command {
 
 impl Command {
     pub fn new(input: &str) -> Self {
+        // TODO: first stage done: split into (punctuation, words, punctuation).
+        //       - second: (punct, words, punct) => (words, Vec<Modifier>)
+        //                 -- extract modifiers not just from punct, but also word modifiers
+        //                 -- like "maybe", "certainly", "unsure"
+        //                 -- resulting words vector needs to drop these modifier words
+        //                 -- ["perhaps", "kill", "boss"] => ["kill", "boss"]
+        //      - third: words need to be analyzed semantically: verbs, objects need to be
+        //               extracted (for now store hardcoded verb/object maps in knowledge.rs)
+        let try_split = Punct::new(input).split_three();
+        // TODO: don't forget to remove debug once parser stage is done!
+        dbg!(try_split);
         Self {
-            verb: Self::back_punct(&input),
+            verb: input.to_owned(),
             objects: Vec::new(),
             indirect_objects: Vec::new(),
             modifiers: Self::extract_modifiers(input),
@@ -32,22 +99,14 @@ impl Command {
         let mut modifiers = vec![];
 
         let modmap = modifier_map();
-        let punct = Self::back_punct(input);
-        if modmap.contains_key(&punct) {
-            modifiers.extend(modmap[&punct].clone());
+        let maybe_punct = Punct::back(input);
+        if let Some(punct) = maybe_punct {
+            if modmap.contains_key(&punct) {
+                modifiers.extend(modmap[&punct].clone());
+            }
         }
 
         modifiers
-    }
-    fn back_punct(input: &str) -> String {
-        (input
-            .chars()
-            .rev()
-            .take_while(|c| c.is_ascii_punctuation())
-            .collect::<String>())
-        .chars()
-        .rev()
-        .collect::<String>()
     }
 }
 
