@@ -8,7 +8,7 @@ use crate::pipeline::*;
 use anyhow::Result;
 
 fn main() -> Result<()> {
-    let starter = "?!   f   oko    j.    nn ?..".to_owned();
+    let starter = "!maybe fucking word certainly certainly fucking fucking word?".to_owned();
 
     let mut pipeline = Pipeline::new();
     pipeline.push_stage(parser_stage())?;

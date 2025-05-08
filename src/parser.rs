@@ -1,6 +1,8 @@
 use crate::knowledge::*;
 use crate::pipeline::*;
 
+use std::collections::HashSet;
+
 /// Parser's main task is to produce a pipeline stage
 /// that converts User Input { String } => Parsed Command { Command }
 ///
@@ -84,29 +86,53 @@ impl Command {
         //                 -- ["perhaps", "kill", "boss"] => ["kill", "boss"]
         //      - third: words need to be analyzed semantically: verbs, objects need to be
         //               extracted (for now store hardcoded verb/object maps in knowledge.rs)
-        let try_split = Punct::new(input).split_three();
+        let (punct_before, words, punct_after) = Punct::new(input).split_three();
+        let (words, modifiers) = Self::extract_modifiers(punct_before, words, punct_after);
         // TODO: don't forget to remove debug once parser stage is done!
-        dbg!(try_split);
+        dbg!((&words, &modifiers));
         Self {
             verb: input.to_owned(),
             objects: Vec::new(),
             indirect_objects: Vec::new(),
-            modifiers: Self::extract_modifiers(input),
+            modifiers,
         }
     }
 
-    fn extract_modifiers(input: &str) -> Vec<Modifier> {
+    fn extract_modifiers(
+        punct_start: Option<String>,
+        words: Vec<String>,
+        punct_end: Option<String>,
+    ) -> (Vec<String>, Vec<Modifier>) {
         let mut modifiers = vec![];
+        let modmap = ModifierMap::new();
 
-        let modmap = modifier_map();
-        let maybe_punct = Punct::back(input);
-        if let Some(punct) = maybe_punct {
-            if modmap.contains_key(&punct) {
-                modifiers.extend(modmap[&punct].clone());
-            }
+        match punct_start {
+            Some(punct) => modifiers.extend(modmap.punct_modifier(&punct)),
+            None => (),
         }
 
-        modifiers
+        let mut nomod_words = vec![];
+        for word in words {
+            let word_mods = modmap.word_modifier(&word);
+            if word_mods.is_empty() {
+                nomod_words.push(word);
+            }
+            modifiers.extend(word_mods);
+        }
+
+        match punct_end {
+            Some(punct) => modifiers.extend(modmap.punct_modifier(&punct)),
+            None => (),
+        }
+
+        (
+            nomod_words,
+            modifiers
+                .into_iter()
+                .collect::<HashSet<_>>()
+                .into_iter()
+                .collect(),
+        )
     }
 }
 
