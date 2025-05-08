@@ -54,7 +54,7 @@ where
 
     fn visualize(&self) -> String {
         format!(
-            "Stage `{}`: {{{} => {}}}",
+            "Stage `{}`: {{ {} }} => {{ {} }}",
             self.name,
             self.input_typename(),
             self.output_typename()
