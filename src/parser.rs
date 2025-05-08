@@ -9,7 +9,6 @@ use std::collections::HashSet;
 /// We don't assign any meanings or intent to the user input yet, as that
 /// is the responsibility of the next stage. This is just parsing the unstructured
 /// user input into a structured and easily processable format.
-
 struct Punct {
     subject: String,
 }
@@ -21,14 +20,16 @@ impl Punct {
         }
     }
 
+    /// Weird method that splits user input into
+    /// (maybe punctuation at start, vec of words, maybe punctuation at the end)
     pub fn split_three(&self) -> (Option<String>, Vec<String>, Option<String>) {
         let trimmed = self.subject.trim();
-        let front = Self::front(&trimmed);
-        let back = Self::back(&trimmed);
+        let front = Self::front(trimmed);
+        let back = Self::back(trimmed);
 
         let no_prefix = match &front {
             Some(prefix) => &trimmed[prefix.len()..],
-            None => &trimmed,
+            None => trimmed,
         };
 
         let middle = match &back {
@@ -70,34 +71,53 @@ impl Punct {
 //       ASAP instead of just hardcoding them in the code.
 #[derive(Debug, Clone)]
 pub struct Command {
-    pub verb: String,
+    pub verb: Verb,
     pub objects: Vec<String>,
-    pub indirect_objects: Vec<String>,
+    pub locations: Vec<String>,
     pub modifiers: Vec<Modifier>,
 }
 
 impl Command {
     pub fn new(input: &str) -> Self {
-        // TODO: first stage done: split into (punctuation, words, punctuation).
-        //       - second: (punct, words, punct) => (words, Vec<Modifier>)
-        //                 -- extract modifiers not just from punct, but also word modifiers
-        //                 -- like "maybe", "certainly", "unsure"
-        //                 -- resulting words vector needs to drop these modifier words
-        //                 -- ["perhaps", "kill", "boss"] => ["kill", "boss"]
-        //      - third: words need to be analyzed semantically: verbs, objects need to be
-        //               extracted (for now store hardcoded verb/object maps in knowledge.rs)
         let (punct_before, words, punct_after) = Punct::new(input).split_three();
         let (words, modifiers) = Self::extract_modifiers(punct_before, words, punct_after);
-        // TODO: don't forget to remove debug once parser stage is done!
-        dbg!((&words, &modifiers));
+        let (verb, objects, locations) = Self::lexical_analysis(&words);
+
         Self {
-            verb: input.to_owned(),
-            objects: Vec::new(),
-            indirect_objects: Vec::new(),
+            verb,
+            objects,
+            locations,
             modifiers,
         }
     }
 
+    /// extracts verbs, list of objects and list of locations from a vec of words
+    fn lexical_analysis(words: &[String]) -> (Verb, Vec<String>, Vec<String>) {
+        if words.is_empty() {
+            return (Verb::IDLE, vec![], vec![]);
+        }
+
+        let mut current_words = words.to_owned();
+        let lexical_map = LexicalMap::new();
+
+        let verb = lexical_map.verb(&words[0]);
+        if verb != Verb::IDLE {
+            current_words.remove(0);
+        }
+
+        let mut objects = vec![];
+        let mut locations = vec![];
+        for word in current_words {
+            if lexical_map.is_object(&word) {
+                objects.push(word.clone());
+            }
+            if lexical_map.is_location(&word) {
+                locations.push(word);
+            }
+        }
+
+        (verb, objects, locations)
+    }
     fn extract_modifiers(
         punct_start: Option<String>,
         words: Vec<String>,
@@ -106,9 +126,8 @@ impl Command {
         let mut modifiers = vec![];
         let modmap = ModifierMap::new();
 
-        match punct_start {
-            Some(punct) => modifiers.extend(modmap.punct_modifier(&punct)),
-            None => (),
+        if let Some(punct) = punct_start {
+            modifiers.extend(modmap.punct_modifier(&punct));
         }
 
         let mut nomod_words = vec![];
@@ -120,9 +139,8 @@ impl Command {
             modifiers.extend(word_mods);
         }
 
-        match punct_end {
-            Some(punct) => modifiers.extend(modmap.punct_modifier(&punct)),
-            None => (),
+        if let Some(punct) = punct_end {
+            modifiers.extend(modmap.punct_modifier(&punct));
         }
 
         (

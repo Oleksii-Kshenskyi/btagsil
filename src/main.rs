@@ -8,7 +8,8 @@ use crate::pipeline::*;
 use anyhow::Result;
 
 fn main() -> Result<()> {
-    let starter = "!maybe fucking word certainly certainly fucking fucking word?".to_owned();
+    let starter =
+        "!maybe take fucking home certainly dog certainly fucking fucking up down word?".to_owned();
 
     let mut pipeline = Pipeline::new();
     pipeline.push_stage(parser_stage())?;
