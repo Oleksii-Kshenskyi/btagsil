@@ -1,14 +1,14 @@
-use crate::knowledge::*;
-use crate::pipeline::*;
-
-use std::collections::HashSet;
-
 /// Parser's main task is to produce a pipeline stage
 /// that converts User Input { String } => Parsed Command { Command }
 ///
 /// We don't assign any meanings or intent to the user input yet, as that
 /// is the responsibility of the next stage. This is just parsing the unstructured
 /// user input into a structured and easily processable format.
+use crate::knowledge::*;
+use crate::pipeline::*;
+
+use std::collections::HashSet;
+
 struct Punct {
     subject: String,
 }
