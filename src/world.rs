@@ -29,6 +29,8 @@ pub fn tag(s: &'static str) -> EntityTag {
     EntityTag::new(s)
 }
 
+// [ ]: Okay, Entity trait exists, but I have no actual Entity types.
+//      I need a couple of them, like some components of the Player, for example.
 pub trait Entity {
     fn id(&self) -> EntityId;
     fn get(&self) -> AnyResult;
@@ -76,12 +78,22 @@ impl World {
         id
     }
 
-    // TODO: write a query() function using the written pseudo-ECS system
-    //       for now query() should only search for entities by tags,
-    //       ... and maybe think about implementing a precise entity-by-id query
+    fn query_by_tag(&self, tags: Vec<&'static str>) -> Vec<Rc<dyn Entity>> {
+        tags.iter()
+            .filter_map(|&tag| self.tags.get(&EntityTag::new(tag)))
+            .flat_map(|ents| ents.iter().cloned())
+            .collect()
+    }
+
+    fn get(&self, id: EntityId) -> Option<Rc<dyn Entity>> {
+        self.entities.get(&id).cloned()
+    }
 
     fn bump_id(&mut self) -> u64 {
         self.last_id += 1;
         self.last_id
     }
 }
+
+// [ ]: init_world() function that both creates and populates World to its initial state
+// NOTE: I need a couple pre-existing entity types for this. Right now I only have the trait.

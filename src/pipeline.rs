@@ -4,7 +4,7 @@ use crate::errors::PipelineError;
 use std::any::TypeId;
 use std::fmt::Display;
 
-pub trait Stage: Send {
+pub trait Stage {
     fn name(&self) -> &str;
     fn visualize(&self) -> String;
     fn run(&self, input: AnyResult) -> Result<AnyResult, PipelineError>;
@@ -17,9 +17,9 @@ pub trait Stage: Send {
 
 pub struct StageImpl<I, O, F>
 where
-    I: 'static + Send,
-    O: 'static + Send,
-    F: Fn(I) -> O + Send + 'static,
+    I: 'static,
+    O: 'static,
+    F: Fn(I) -> O + 'static,
 {
     _input: std::marker::PhantomData<I>,
     _output: std::marker::PhantomData<O>,
@@ -29,9 +29,9 @@ where
 
 impl<I, O, F> Stage for StageImpl<I, O, F>
 where
-    I: 'static + Send,
-    O: 'static + Send,
-    F: Fn(I) -> O + Send + 'static,
+    I: 'static,
+    O: 'static,
+    F: Fn(I) -> O + 'static,
 {
     fn name(&self) -> &str {
         self.name.as_str()
@@ -82,9 +82,9 @@ impl Display for dyn Stage {
 
 pub fn stage<I, O, F>(name: &str, func: F) -> Box<dyn Stage>
 where
-    I: 'static + Send,
-    O: 'static + Send,
-    F: Fn(I) -> O + Send + 'static,
+    I: 'static,
+    O: 'static,
+    F: Fn(I) -> O + 'static,
 {
     Box::new(StageImpl::<I, O, F> {
         _input: Default::default(),
